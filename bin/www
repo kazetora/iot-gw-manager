@@ -6,7 +6,14 @@
 
 var app = require('../app');
 var debug = require('debug')('serverWatcher:server');
-var http = require('http');
+//var http = require('http');
+var https = require('https');
+var fs = require('fs');
+
+var sslOptions = {
+    key: fs.readFileSync(__dirname + '/../ssl/server.key'),
+    cert: fs.readFileSync(__dirname + '/../ssl/server.crt')
+};
 
 /**
  * Get port from environment and store in Express.
@@ -19,7 +26,7 @@ app.set('port', port);
  * Create HTTP server.
  */
 
-var server = http.Server(app);
+var server = https.createServer(sslOptions, app);
 var io = require("socket.io")(server);
 
 io.on("connection", function(socket){
