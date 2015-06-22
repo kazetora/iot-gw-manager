@@ -9,6 +9,14 @@ router.get('/', function(req, res, next) {
     });
 });
 
+router.get('/getNodeByName/:name', function(req, res, next) {
+    var db = req.db;
+    var nodeName = req.params.name;
+    db.collection('nodes').find({name: nodeName}).toArray(function (err, items) {
+        res.json(items[0]);
+    });
+});
+
 router.post('/addNode', function(req, res, next) {
     console.log(req.body);
     var params = req.body.params;
@@ -75,5 +83,6 @@ router.delete('/deleteNode/:id', function(req, res, next) {
          res.send((result === 1) ? { msg: '' } : { msg:'error: ' + err });
     });
 });
+
 
 module.exports = router;
