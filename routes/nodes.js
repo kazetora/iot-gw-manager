@@ -53,7 +53,7 @@ router.post('/updateNodeIP', function(req, res, next) {
     var response = {'status':0, message:""};
     var db = req.db;
     console.dir(params)
-    db.collection('nodes').find({id:params.id}).toArray(function (err, items) {
+    db.collection('nodes').find({name:params.id}).toArray(function (err, items) {
         if (items.length == 0) {
             console.error("node id not found");
             response.status = 1;
