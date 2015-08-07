@@ -23,7 +23,7 @@ router.post('/addEvent', function(req, res, next) {
         node_id: params.id,
         type: (typeof params.type === 'undefined') ? 0 : params.type, // default: 0
         date_create: new Date(),
-        data: params.data
+        data: params.data[0]
     }
     db.collection('events').insert(insert_data, function(err, result) {
         if(err) {
