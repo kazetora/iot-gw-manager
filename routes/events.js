@@ -11,7 +11,7 @@ router.get('/:id', function(req, res, next) {
     db.collection('events').find({node_id: targetId}).toArray(function (err, items) {
         //var ret = [];
         //item.foreach
-        //res.json(items);
+        res.json(items);
     });
 });
 
@@ -34,9 +34,20 @@ router.post('/addEvent', function(req, res, next) {
     });
 });
 
-// router.get('/getGeoJson/:id', function(req, res, next) {
-//     var db = req.db;
-//
-// });
+router.get('/getGeoJson/:id', function(req, res, next) {
+    var db = req.db;
+    var targetId = req.params.id;
+    var GeoJSON = require('geojson');
+    //var to = req.body.to;
+    //var max = (typeof req.body.max === 'undefined') ? 0 : req.body.max;
+    db.collection('events').find({node_id: targetId}).toArray(function (err, items) {
+        //var ret = [];
+        //item.foreach
+        //res.json(items);
+        var geojson = GeoJSON.parse(items, {Point: ['data.gps.latitude', 'data.gps.longitude']})
+        console.log(geojson);
+        res.send(geojson);
+    });
+});
 
 module.exports = router;

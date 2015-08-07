@@ -17,6 +17,7 @@
     "mongoskin": "~1.4.0",
     "shortid": "~2.2.2",
     "urlcode-json": "*",
-    "socket.io": "*"
+    "socket.io": "*",
+    "geojson": "~0.2.1"
   }
 }
