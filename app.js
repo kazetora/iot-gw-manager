@@ -28,7 +28,7 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use(function(req, res, next) {
-    console.log(req.connection.remoteAddress);
+    //console.log(req.connection.remoteAddress);
     req.db = db;
     next();
 });

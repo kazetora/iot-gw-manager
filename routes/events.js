@@ -19,37 +19,18 @@ router.post('/addEvent', function(req, res, next) {
     var params = req.body;
     var response = {'status':0, message:""};
     var db = req.db;
-    // var insert_data = {
-    //     node_id: params.id,
-    //     type: (typeof params.type === 'undefined') ? 0 : params.type, // default: 0
-    //     date_create: new Date(),
-    //     data: params.data
-    // }
-    // db.collection('events').insert(insert_data, function(err, result) {
-    //     if(err) {
-    //         response.status = 1;
-    //         response.msg = err;
-    //     }
-    //     res.send(response);
-    // });
-    db.collection('events', function(err,collection) {
-      var bulk = collection.initialUnorderedBulkOp();
-      for (ev in params.data) {
-        var insert_data = {
-            node_id: params.id,
-            type: (typeof params.type === 'undefined') ? 0 : params.type, // default: 0
-            date_create: new Date(),
-            data: ev
-        }
-        bulk.insert(insert_data);
-      }
-      bulk.execute(function(err, result) {
-        if(err){
-          response['status'] = 1;
-          response['message'] = err;
+    var insert_data = {
+        node_id: params.id,
+        type: (typeof params.type === 'undefined') ? 0 : params.type, // default: 0
+        date_create: new Date(),
+        data: params.data
+    }
+    db.collection('events').insert(insert_data, function(err, result) {
+        if(err) {
+            response.status = 1;
+            response.msg = err;
         }
         res.send(response);
-      });
     });
 });
 
