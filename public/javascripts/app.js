@@ -1,6 +1,14 @@
 'use strict'
 
-var app = angular.module('iotGwMonitor', ['ngResource', 'btford.socket-io']);
+var app = angular.module('iotGwMonitor', ['ngResource', 'btford.socket-io', 'uiGmapgoogle-maps']);
+
+app.config(function(uiGmapGoogleMapApiProvider) {
+  uiGmapGoogleMapApiProvider.configure({
+      key: 'AIzaSyCbQ5yY89z6ZziaXrrnpL_HcJKLRu1T6sQ',
+      v: '3.17',
+      libraries: 'weather,geometry,visualization'
+  });
+});
 
 app.controller('NodeController', ['$scope', 'NodeService', '$timeout', 'mySocket',
     function($scope, NodeService, $timeout, mySocket){
@@ -36,13 +44,13 @@ app.controller('NodeController', ['$scope', 'NodeService', '$timeout', 'mySocket
                     $scope.updateView();
                 });
             }
-        }; 
+        };
         $scope.deleteNode = function(node) {
             NodeService.delete({cmd:'deleteNode', id:node._id}, function(){
                 $scope.updateView();
             });
         };
-        
+
         init();
     }]);
 
@@ -50,7 +58,7 @@ app.controller('NodeController', ['$scope', 'NodeService', '$timeout', 'mySocket
 app.service('NodeService', ['$resource', function($resource) {
     return $resource('nodes/:cmd/:id', {}, {
         get: {method: 'GET', isArray: true},
-        save: {method: 'POST'}, 
+        save: {method: 'POST'},
         delete: {method: 'DELETE'}
     });
 }]);

@@ -12,6 +12,7 @@ var routes = require('./routes/index');
 var users = require('./routes/users');
 var nodes = require('./routes/nodes');
 var events = require('./routes/events');
+var map = require('./routes/map');
 
 var app = express();
 
@@ -36,6 +37,7 @@ app.use('/', routes);
 app.use('/users', users);
 app.use('/nodes', nodes);
 app.use('/events', events);
+app.use('/map', map);
 app.use('/static', express.static(path.join(__dirname, 'files')));
 
 // catch 404 and forward to error handler
