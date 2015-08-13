@@ -2,8 +2,38 @@ extends layout
 
 block content
     //include map_embd.html
-    div.row
+    div.row(ng-controller="mapController")
         div.col-md-6
-            div#map_canvas(ng-controller="mapController")
+            div#map_canvas
                 map
-        div.col-md-6 Test
+        div.col-md-6
+            div.row
+                div.col-md-4
+                    h4
+                        span.label.label-primary From:
+                    div.dropdown
+                        a.dropdown-toggle#dropdown1(role="button" data-toggle="dropdown" data-target="#" href="#")
+                            div.input-group
+                                input.form-control(type="text" ng-model="data.date")
+                                span.input-group-addon
+                                    i.glyphicon.glyphicon-calendar
+                        ul.dropdown-menu(role="menu" aria-labelledby="dLabel")
+                            datetimepicker(ng-model="data.date" data-datetimepicker-config="{ dropdownSelector: '#dropdown1'}")
+                    //div.form-group
+                    //  div.input-group.date#date_from
+                    //    input.form-control(type="text" placeholder="from")
+                    //    span.input-group-addon
+                    //      span.glyphicon.glyphicon-calendar
+                div.col-md-4
+                    h4
+                        span.label.label-primary To:
+              //      div.form-group
+              //        div.input-group.date#date_to
+              //          input.form-control(type="text" placeholder="to")
+              //          span.input-group-addon
+              //            span.glyphicon.glyphicon-calendar
+              //  script(type="text/javascript").
+              //    $(function() {
+              //      $('#date_from').datetimepicker();
+              //      $('#date_to').datetimepicker();
+              //    });
