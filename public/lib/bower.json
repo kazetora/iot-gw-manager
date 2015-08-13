@@ -17,6 +17,6 @@
     "angular-resource": "~1.4.0",
     "angular-socket-io": "~0.7.0",
     "bootstrap": "~3.3.5",
-    "angular-google-maps": "~2.1.5"
+    "ngmap": "~1.7.0"
   }
 }

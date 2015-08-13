@@ -1,14 +1,14 @@
 'use strict'
 
-var app = angular.module('iotGwMonitor', ['ngResource', 'btford.socket-io', 'uiGmapgoogle-maps']);
+var app = angular.module('iotGwMonitor', ['ngResource', 'btford.socket-io', 'ngMap']);
 
-app.config(function(uiGmapGoogleMapApiProvider) {
-  uiGmapGoogleMapApiProvider.configure({
-      key: 'AIzaSyCbQ5yY89z6ZziaXrrnpL_HcJKLRu1T6sQ',
-      v: '3.17',
-      libraries: 'weather,geometry,visualization'
-  });
-});
+// app.config(function(uiGmapGoogleMapApiProvider) {
+//   uiGmapGoogleMapApiProvider.configure({
+//       key: 'AIzaSyCbQ5yY89z6ZziaXrrnpL_HcJKLRu1T6sQ',
+//       v: '3.17',
+//       libraries: 'weather,geometry,visualization'
+//   });
+// });
 
 app.controller('NodeController', ['$scope', 'NodeService', '$timeout', 'mySocket',
     function($scope, NodeService, $timeout, mySocket){

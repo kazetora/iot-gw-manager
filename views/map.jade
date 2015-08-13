@@ -1,4 +1,9 @@
 extends layout
 
 block content
-    include map_embd.html
+    //include map_embd.html
+    div.row
+        div.col-md-6
+            div#map_canvas(ng-controller="mapController")
+                map
+        div.col-md-6 Test

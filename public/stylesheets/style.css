@@ -7,7 +7,7 @@ a {
   color: #00B7FF;
 }
 
-.angular-google-map-container {
-  width: 500px;
-  height: 400px;
+map {
+  width: 600px;
+  height: 500px;
 }

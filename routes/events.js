@@ -6,9 +6,22 @@ router.get('/:id', function(req, res, next) {
     var db = req.db;
     var targetId = req.params.id;
 
+    var startdate = new Date(req.query.startdate);
+    var enddate = new Date(req.query.enddate);
+
+    var filter = {
+      node_id: targetId,
+      date_create: {
+        $gte: startdate,
+        $lte: enddate
+      },
+      lat: {$ne: 0},
+      lon: {$ne: 0}
+    }
+    console.dir(filter);
     //var to = req.body.to;
     //var max = (typeof req.body.max === 'undefined') ? 0 : req.body.max;
-    db.collection('events').find({node_id: targetId}).toArray(function (err, items) {
+    db.collection('events').find(filter).toArray(function (err, items) {
         //var ret = [];
         //item.foreach
         res.json(items);
