@@ -55,15 +55,17 @@ router.post('/addEvent', function(req, res, next) {
     }
 });
 
-router.get('/getGeoJson/:id', function(req, res, next) {
+router.post('/getGeoJson/', function(req, res, next) {
     var db = req.db;
-    var targetId = req.params.id;
+    console.dir(req.body)
+    var targetIds = req.body.node_ids;
     var GeoJSON = require('geojson');
-    var startdate = new Date(req.query.startdate);
-    var enddate = new Date(req.query.enddate);
+    var center = require('turf-center');
+    var startdate = new Date(req.body.startdate);
+    var enddate = new Date(req.body.enddate);
 
     var filter = {
-      node_id: targetId,
+      node_id: { $in: targetIds},
       date_create: {
         $gte: startdate,
         $lte: enddate
@@ -79,8 +81,17 @@ router.get('/getGeoJson/:id', function(req, res, next) {
         //item.foreach
         //res.json(items);
         var geojson = GeoJSON.parse(items, {Point: ['lat', 'lon']})
+        centerPt = center(geojson);
+        console.dir(centerPt.geometry.coordinates);
+        var ret = {
+          center: {
+            lng: centerPt.geometry.coordinates[0],
+            lat: centerPt.geometry.coordinates[1]
+          },
+          data: geojson
+        }
         //console.log(geojson);
-        res.send(geojson);
+        res.send(ret);
     });
 });
 

@@ -13,10 +13,18 @@
 // }
 //
 // google.maps.event.addDomListener(window, 'load', initialize);
-app.controller('mapController', ['$scope', 'gpsDataService',
-  function($scope, gpsDataService){
+app.controller('mapController', ['$scope', 'gpsDataService', 'NodeService',
+  function($scope, gpsDataService, NodeService){
     var mapopt = { center: {lat: 35.708124, lng:139.762660}, zoom: 8};
 
+    var init = function() {
+      $scope.updateList();
+      $scope.sfilter = "";
+      $scope.searchList = [];
+      $scope.selectFromList = [];
+      $scope.selectToList = [];
+      $scope.nodeList = [];
+    }
     // uiGmapGoogleMapApi.then(function(maps) {
     //   //maps.Map.data.loadGeoJson('events/getGeoJson/edison0500?startdate=2015-08-07T18:00:00+09:00&enddate=2015-08-07T19:00:00+09:00');
     // });
@@ -29,10 +37,10 @@ app.controller('mapController', ['$scope', 'gpsDataService',
         //$scope.map = map;
     });
 
-    $scope.startdate = moment().format("YYYY-MM-DDTHH:mm:ss+09:00");
-    $scope.enddate = moment().format("YYYY-MM-DDTHH:mm:ss+09:00");
+    $scope.startdate = moment();
+    $scope.enddate = moment();
 
-    console.log($scope.startdate, $scope.enddate);
+    //console.log($scope.startdate, $scope.enddate);
 
     //$scope.gpsdata = {};
     $scope.clearMap = function() {
@@ -44,16 +52,21 @@ app.controller('mapController', ['$scope', 'gpsDataService',
     $scope.onFromDateChange = function () {
 
     };
-    $scope.getGPSData1 = function() {
+    $scope.getGPSData = function() {
       //window.alert("aaaa");
+      var params = {
+        node_ids: $scope.searchList,
+        startdate: $scope.startdate,
+        enddate:   $scope.enddate
+      };
+
       $scope.clearMap();
-      var geojson = gpsDataService.get({
-                      node_id: "edison0500",
-                      startdate: "2015-08-07T18:00:00+09:00",
-                      enddate:   "2015-08-07T19:00:00+09:00"},
+      var geojson = gpsDataService.get({}, params,
                       function(){
                           //$scope.map.data.clear();
-                          $scope.map.data.addGeoJson(geojson);
+                          $scope.map.setCenter(geojson.center);
+                          $scope.map.data.addGeoJson(geojson.data);
+
                       });
     };
     $scope.getGPSData2 = function() {
@@ -68,11 +81,58 @@ app.controller('mapController', ['$scope', 'gpsDataService',
                           $scope.map.data.addGeoJson(geojson);
                       });
     };
+
+    $scope.updateList = function() {
+        var nodeData = NodeService.get(function(){
+            //$scope.nodeList = nodeData;
+            for(var i = 0; i < nodeData.length; i++) {
+              $scope.nodeList.push(nodeData[i].name);
+            }
+        });
+    };
+
+    $scope.toSearchList = function() {
+        var addremlist = [];
+        //$scope.searchList = [];
+        for(var i =0; i< $scope.selectFromList.length; i++) {
+          addremlist.push($scope.selectFromList[i]);
+          $scope.searchList.push($scope.selectFromList[i]);
+        }
+
+        var tmplist = [];
+        for(var i = 0; i < $scope.nodeList.length; i++) {
+          if(addremlist.indexOf($scope.nodeList[i]) < 0)
+            tmplist.push($scope.nodeList[i]);
+        }
+
+        $scope.nodeList = tmplist;
+        $scope.selectFromList = [];
+    }
+
+    $scope.toSelectList = function() {
+        var addremlist = [];
+        //$scope.searchList = [];
+        for(var i =0; i< $scope.selectToList.length; i++) {
+          addremlist.push($scope.selectToList[i]);
+          $scope.nodeList.push($scope.selectToList[i]);
+        }
+
+        var tmplist = [];
+        for(var i = 0; i < $scope.searchList.length; i++) {
+          if(addremlist.indexOf($scope.searchList[i]) < 0)
+            tmplist.push($scope.searchList[i]);
+        }
+
+        $scope.searchList = tmplist;
+        $scope.selectToList = [];
+    }
+
+    init();
   }]);
 
 app.service('gpsDataService', ['$resource', function($resource) {
   return $resource('/events/getGeoJson/:node_id', {}, {
-      get: {method: 'GET', isArray: false}
+      get: {method: 'POST', isArray: false}
       //save: {method: 'POST'},
       //delete: {method: 'DELETE'}
   });
