@@ -13,8 +13,8 @@
 // }
 //
 // google.maps.event.addDomListener(window, 'load', initialize);
-app.controller('mapController', ['$scope', 'gpsDataService', 'NodeService',
-  function($scope, gpsDataService, NodeService){
+app.controller('mapController', ['$scope', 'gpsDataService', 'NodeService', 'mySocket',
+  function($scope, gpsDataService, NodeService, mySocket){
     var mapopt = { center: {lat: 35.708124, lng:139.762660}, zoom: 8};
 
     var init = function() {
@@ -24,6 +24,12 @@ app.controller('mapController', ['$scope', 'gpsDataService', 'NodeService',
       $scope.selectFromList = [];
       $scope.selectToList = [];
       $scope.nodeList = [];
+      $scope.gpsTrackData = {};
+      mySocket.forward('gpsTrace', $scope);
+      $scope.$on('socket:gpsTrace', function(ev, data){
+        console.log(data);
+        $scope.showGPSTracking(data);
+      })
     }
     // uiGmapGoogleMapApi.then(function(maps) {
     //   //maps.Map.data.loadGeoJson('events/getGeoJson/edison0500?startdate=2015-08-07T18:00:00+09:00&enddate=2015-08-07T19:00:00+09:00');
@@ -125,6 +131,26 @@ app.controller('mapController', ['$scope', 'gpsDataService', 'NodeService',
 
         $scope.searchList = tmplist;
         $scope.selectToList = [];
+    }
+
+    $scope.startGPSTracking = function() {
+        console.log("start gps tracking");
+        mySocket.emit("start_gps_tracking");
+    }
+
+    $scope.stopGPSTracking = function() {
+        console.log("stop gps tracking");
+        mySocket.emit("stop_gps_tracking");
+    }
+
+    $scope.showGPSTracking = function(data) {
+        $scope.gpsTrackData[data.id] = data;
+        $scope.clearMap();
+        for(var nodeid in $scope.gpsTrackData) {
+          var gj = GeoJSON.parse([$scope.gpsTrackData[nodeid]], {Point: ['lat', 'lng']});
+          console.log(gj);
+          $scope.map.data.addGeoJson(gj);
+        }
     }
 
     init();

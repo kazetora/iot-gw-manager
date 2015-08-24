@@ -53,7 +53,14 @@ block content
                     //{{searchList}}
 
             div.row
-                div.col-md-1
-
+                div.col-md-3
                    div(style="padding-top: 5px;")
                       button.btn.btn-primary(type="button" ng-click="getGPSData()") Search
+
+                div.col-md-3
+                   div(style="padding-top: 5px;")
+                      button.btn.btn-primary(type="button" ng-click="startGPSTracking()") Start Tracking
+
+                div.col-md-3
+                   div(style="padding-top: 5px;")
+                      button.btn.btn-primary(type="button" ng-click="stopGPSTracking()") Stop Tracking
