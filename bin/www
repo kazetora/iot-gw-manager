@@ -30,6 +30,7 @@ var server = https.createServer(sslOptions, app);
 var io = require("socket.io")(server);
 
 var GPSTrackingStart = false;
+//var markedAreas = [];
 //var GPSTrackingRoom = "gpsTracking";
 
 io.on("connection", function(socket){
@@ -61,7 +62,12 @@ io.on("connection", function(socket){
 
     socket.on("gps_trace", function(gps){
       console.log(gps);
+      //var inside = require('turf-inside');
       socket.broadcast.emit('gpsTrace', gps);
+    });
+
+    socket.on("add_new_polygon", function(coords) {
+      //markedAreas = coords;
     });
 });
 

@@ -25,9 +25,11 @@ app.controller('mapController', ['$scope', 'gpsDataService', 'NodeService', 'myS
       $scope.selectToList = [];
       $scope.nodeList = [];
       $scope.gpsTrackData = {};
+      $scope.markedAreas = [];
+      $scope.incStatus = "";
       mySocket.forward('gpsTrace', $scope);
       $scope.$on('socket:gpsTrace', function(ev, data){
-        console.log(data);
+        //console.log(data);
         $scope.showGPSTracking(data);
       })
     }
@@ -41,6 +43,39 @@ app.controller('mapController', ['$scope', 'gpsDataService', 'NodeService', 'myS
         map.setZoom(mapopt.zoom);
         //map.data.loadGeoJson('/events/getGeoJson/edison0500?startdate=2015-08-07T18:00:00%2B09:00&enddate=2015-08-07T19:00:00%2B09:00');
         //$scope.map = map;
+        var drawingManager = new google.maps.drawing.DrawingManager({
+          drawingMode: null,
+          drawingControl: true,
+          drawingControlOptions : {
+            position: google.maps.ControlPosition.TOP_CENTER,
+            drawingModes: [
+              google.maps.drawing.OverlayType.POLYGON
+            ]
+          },
+          polygonOptions: {
+            clickable: true,
+            draggable: false,
+            editable: false
+          },
+        });
+        drawingManager.setMap(map);
+
+        google.maps.event.addListener(drawingManager, 'polygoncomplete', function(polygon){
+          //var paths = polygon.getPaths();
+          //console.log(paths);
+          var vertices = polygon.getPath();
+          var polycoor = [];
+          for(var i =0; i< vertices.length; i++) {
+            var xy = vertices.getAt(i);
+            polycoor.push({
+              lat: xy.lat(),
+              lng: xy.lng()
+            });
+          }
+          console.dir(polycoor);
+          $scope.markedAreas = polycoor;
+          //mySocket.emit('add_new_polygon', polycoor);
+        });
     });
 
     $scope.startdate = moment();
@@ -148,15 +183,32 @@ app.controller('mapController', ['$scope', 'gpsDataService', 'NodeService', 'myS
         $scope.clearMap();
         for(var nodeid in $scope.gpsTrackData) {
           var gj = GeoJSON.parse([$scope.gpsTrackData[nodeid]], {Point: ['lat', 'lng']});
-          console.log(gj);
+          //console.log(gj);
           $scope.map.data.addGeoJson(gj);
-          //var label = new ELabel(new google.maps.LatLng($scope.gpsTrackData[nodeid].lat, $scope.gpsTrackData[nodeid].lng), 
+          //var label = new ELabel(new google.maps.LatLng($scope.gpsTrackData[nodeid].lat, $scope.gpsTrackData[nodeid].lng),
           //                        $scope.gpsTrackData[nodeid].id, "style1");
           //$scope.map.addOverlay(label);
           $scope.map.data.setStyle(function(feature) {
               var title = feature.getProperty('id');
+              var geometry = feature.getGeometry().get();
+              console.log(geometry);
+              if($scope.markedAreas.length > 0) {
+                var ma = new google.maps.Polygon({paths: $scope.markedAreas});
+                var color = google.maps.geometry.poly.containsLocation(geometry, ma) ? 'red' : 'blue';
+              }
+              else {
+                var color = 'blue';
+              }
               return {
-                  title: title
+                  title: title,
+                  icon: {
+                    path: google.maps.SymbolPath.CIRCLE,
+                    fillColor: color,
+                    fillOpacity: 1,
+                    strokeColor: 'black',
+                    strokeWeight: .5,
+                    scale: 7
+                  }
               };
           });
         }
