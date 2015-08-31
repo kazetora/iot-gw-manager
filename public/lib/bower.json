@@ -19,6 +19,7 @@
     "bootstrap": "~3.3.5",
     "ngmap": "~1.7.0",
     "moment": "~2.10.6",
-    "angular-bootstrap-datetimepicker": "latest"
+    "angular-bootstrap-datetimepicker": "latest",
+    "lodash": "~3.10.1"
   }
 }

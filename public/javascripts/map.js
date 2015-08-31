@@ -150,6 +150,15 @@ app.controller('mapController', ['$scope', 'gpsDataService', 'NodeService', 'myS
           var gj = GeoJSON.parse([$scope.gpsTrackData[nodeid]], {Point: ['lat', 'lng']});
           console.log(gj);
           $scope.map.data.addGeoJson(gj);
+          //var label = new ELabel(new google.maps.LatLng($scope.gpsTrackData[nodeid].lat, $scope.gpsTrackData[nodeid].lng), 
+          //                        $scope.gpsTrackData[nodeid].id, "style1");
+          //$scope.map.addOverlay(label);
+          $scope.map.data.setStyle(function(feature) {
+              var title = feature.getProperty('id');
+              return {
+                  title: title
+              };
+          });
         }
     }
 
