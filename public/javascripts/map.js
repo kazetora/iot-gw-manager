@@ -134,11 +134,12 @@ app.controller('mapController', ['$scope','$modal', 'gpsDataService', 'NodeServi
           }
 
           var areaId = areaService.save({cmd: 'addArea'}, {params: areaData}, function(){
-
+            console.log(areaId);
+            if(areaId.status == 0)
+              $scope.markedAreas.push({_id: areaId.message, name: data.name, area: polygon, cuids: data.cuids});
+            //$scope.$apply();
           });
-          if(areaId.status == 0)
-            $scope.markedAreas.push({_id: areaId.message, name: data.name, area: polygon, cuids: data.cuids});
-          //$scope.$apply();
+
         }, function() {
           // remove the polygon
           polygon.setMap(null);
