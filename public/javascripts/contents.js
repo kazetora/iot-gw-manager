@@ -9,6 +9,12 @@ angular.module('iotGwMonitor').controller('modalContentsController',
     console.log($scope.contentsIMG);
 
     $scope.ok = function() {
+
+      if($scope.selectedContents.length == 0 || $scope.areaName == '') {
+        alert("Please specify area name and select at least one content");
+        return;
+      }
+
       var cuids =[];
       for(var i=0; i< $scope.selectedContents.length; i++) {
         cuids.push($scope.selectedContents[i].cuid);
