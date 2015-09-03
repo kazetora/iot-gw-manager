@@ -32,22 +32,22 @@ block content
                           div.dropdown
                               a.dropdown-toggle#dropdown1(role="button" data-toggle="dropdown" data-target="#" href="#")
                                   div.input-group
-                                      input.form-control(type="text" ng-model="startdate")
+                                      input.form-control(type="text" ng-model="gpsSearch.startdate")
                                       span.input-group-addon
                                           i.glyphicon.glyphicon-calendar
                               ul.dropdown-menu(role="menu" aria-labelledby="dLabel")
-                                  datetimepicker(ng-model="startdate" data-datetimepicker-config="{ dropdownSelector: '#dropdown1'}")
+                                  datetimepicker(ng-model="gpsSearch.startdate" data-datetimepicker-config="{ dropdownSelector: '#dropdown1'}")
                       div.col-md-6
                           h4
                               span.label.label-info To:
                           div.dropdown
                               a.dropdown-toggle#dropdown2(role="button" data-toggle="dropdown" data-target="#" href="#")
                                   div.input-group
-                                      input.form-control(type="text" ng-model="enddate")
+                                      input.form-control(type="text" ng-model="gpsSearch.enddate")
                                       span.input-group-addon
                                           i.glyphicon.glyphicon-calendar
                               ul.dropdown-menu(role="menu" aria-labelledby="dLabel")
-                                  datetimepicker(ng-model="enddate" data-datetimepicker-config="{ dropdownSelector: '#dropdown2'}")
+                                  datetimepicker(ng-model="gpsSearch.enddate" data-datetimepicker-config="{ dropdownSelector: '#dropdown2'}")
 
                   div.row
                       div.col-md-5
@@ -58,7 +58,7 @@ block content
                           input.form-control(type="text" placeholder="Filter" ng-model="sfilter" style="padding-top:5px;padding-bottom:5px;")
                   div.row
                       div.col-md-5
-                          select#select-list.form-control(multiple ng-model="selectFromList")
+                          select#select-list.form-control(multiple ng-model="gpsSearch.selectFromList")
                               option(ng-repeat="node in nodeList|filter:sfilter" value="{{node}}") {{node}}
                       div.col-md-2
                           div(style="padding-top: 5px;")
@@ -66,7 +66,7 @@ block content
                              div(style="padding-top: 5px;")
                                 button.btn.btn-primary(type="button" ng-click="toSelectList()") Remove
                       div.col-md-5
-                          select#search-list.form-control(multiple ng-model="selectToList")
+                          select#search-list.form-control(multiple ng-model="gpsSearch.selectToList")
                               option(ng-repeat="node in searchList" value="{{node}}") {{node}}
                           //{{searchList}}
 

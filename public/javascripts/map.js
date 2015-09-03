@@ -17,17 +17,22 @@ app.controller('mapController', ['$scope','$modal', 'gpsDataService', 'NodeServi
   function($scope, $modal, gpsDataService, NodeService, contentsDataService, areaService, mySocket){
     var mapopt = { center: {lat: 35.708124, lng:139.762660}, zoom: 8};
 
+    $scope.sfilter = "";
+    $scope.gpsSearch = {};
+    $scope.searchList = [];
+    $scope.selectFromList = [];
+    $scope.selectToList = [];
+    $scope.nodeList = [];
+    $scope.gpsSearch.startdate = moment();
+    $scope.gpsSearch.enddate = moment();
+
+    $scope.gpsTrackData = {};
+    $scope.gpsTrackStart = false;
+    $scope.markedAreas = [];
+    $scope.incStatus = "";
+
     var init = function() {
       $scope.updateList();
-      $scope.sfilter = "";
-      $scope.searchList = [];
-      $scope.selectFromList = [];
-      $scope.selectToList = [];
-      $scope.nodeList = [];
-      $scope.gpsTrackData = {};
-      $scope.gpsTrackStart = false;
-      $scope.markedAreas = [];
-      $scope.incStatus = "";
       mySocket.forward('gpsTrace', $scope);
       $scope.$on('socket:gpsTrace', function(ev, data){
         //console.log(data);
@@ -86,8 +91,7 @@ app.controller('mapController', ['$scope','$modal', 'gpsDataService', 'NodeServi
         });
     });
 
-    $scope.startdate = moment();
-    $scope.enddate = moment();
+
 
     //console.log($scope.startdate, $scope.enddate);
     $scope.openSelectContent = function(polygon) {
@@ -189,8 +193,8 @@ app.controller('mapController', ['$scope','$modal', 'gpsDataService', 'NodeServi
 
       var params = {
         node_ids: $scope.searchList,
-        startdate: $scope.startdate,
-        enddate:   $scope.enddate
+        startdate: $scope.gpsSearch.startdate,
+        enddate:   $scope.gpsSearch.enddate
       };
 
       $scope.clearMap();
@@ -215,9 +219,9 @@ app.controller('mapController', ['$scope','$modal', 'gpsDataService', 'NodeServi
     $scope.toSearchList = function() {
         var addremlist = [];
         //$scope.searchList = [];
-        for(var i =0; i< $scope.selectFromList.length; i++) {
-          addremlist.push($scope.selectFromList[i]);
-          $scope.searchList.push($scope.selectFromList[i]);
+        for(var i =0; i< $scope.gpsSearch.selectFromList.length; i++) {
+          addremlist.push($scope.gpsSearch.selectFromList[i]);
+          $scope.searchList.push($scope.gpsSearch.selectFromList[i]);
         }
 
         var tmplist = [];
@@ -227,15 +231,15 @@ app.controller('mapController', ['$scope','$modal', 'gpsDataService', 'NodeServi
         }
 
         $scope.nodeList = tmplist;
-        $scope.selectFromList = [];
+        $scope.gpsSearch.selectFromList = [];
     }
 
     $scope.toSelectList = function() {
         var addremlist = [];
         //$scope.searchList = [];
-        for(var i =0; i< $scope.selectToList.length; i++) {
-          addremlist.push($scope.selectToList[i]);
-          $scope.nodeList.push($scope.selectToList[i]);
+        for(var i =0; i< $scope.gpsSearch.selectToList.length; i++) {
+          addremlist.push($scope.gpsSearch.selectToList[i]);
+          $scope.nodeList.push($scope.gpsSearch.selectToList[i]);
         }
 
         var tmplist = [];
@@ -245,7 +249,7 @@ app.controller('mapController', ['$scope','$modal', 'gpsDataService', 'NodeServi
         }
 
         $scope.searchList = tmplist;
-        $scope.selectToList = [];
+        $scope.gpsSearch.selectToList = [];
     }
 
     $scope.startGPSTracking = function() {
@@ -359,6 +363,8 @@ app.controller('mapController', ['$scope','$modal', 'gpsDataService', 'NodeServi
         poly.setMap(null);
       });
     }
+
+    //$scope.startDateChange =
 
     init();
   }]);

@@ -1,6 +1,6 @@
 'use strict'
 
-var app = angular.module('iotGwMonitor', ['ngResource', 'btford.socket-io', 'ngMap', 'ui.bootstrap', 'listGroup']);
+var app = angular.module('iotGwMonitor', ['ngResource', 'btford.socket-io', 'ngMap', 'ui.bootstrap', 'listGroup', 'ui.bootstrap.datetimepicker']);
 
 // app.config(function(uiGmapGoogleMapApiProvider) {
 //   uiGmapGoogleMapApiProvider.configure({
