@@ -3,12 +3,13 @@ var express = require('express');
 var router = express.Router();
 var config = require('config');
 
-router.get('/getContents/:ctype', function(req, res, next) {
+router.get('/getContents/:ctype/:cuid?', function(req, res, next) {
     // var db = req.db;
     // db.collection('nodes').find().toArray(function (err, items) {
     //     res.json(items);
     // });
     var ctype = (typeof req.params.ctype !== 'undefined') ? req.params.ctype : "";
+    var cuid = (typeof req.params.cuid !== 'undefined') ? req.params.cuid : "";
 
     var Client = require('node-rest-client').Client;
     client = new Client();
@@ -17,9 +18,16 @@ router.get('/getContents/:ctype', function(req, res, next) {
     if(ctype && (ctype in wfms.content_type)) {
         get_content_url += "/" + wfms.content_type[ctype];
     }
+    if(cuid ) {
+        get_content_url += "/" + cuid;
+    }
     console.log(get_content_url);
     var req = client.get(get_content_url, function(data, response){
-      console.log(data.toString());
+      if(!Array.isArray(data)) {
+        data = [data];
+      }
+      console.log(data);
+
       res.send(data);
     });
 

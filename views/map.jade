@@ -2,63 +2,99 @@ extends layout
 
 block content
     //include map_embd.html
-    div#main(ng-controller="mapController")
-      div.row
-          div.col-md-6
-              div#map_canvas
-                  map
-          div.col-md-6
-              div.row
-                  div.col-md-6
-                      h4
-                          span.label.label-info From:
-                      div.dropdown
-                          a.dropdown-toggle#dropdown1(role="button" data-toggle="dropdown" data-target="#" href="#")
-                              div.input-group
-                                  input.form-control(type="text" ng-model="startdate")
-                                  span.input-group-addon
-                                      i.glyphicon.glyphicon-calendar
-                          ul.dropdown-menu(role="menu" aria-labelledby="dLabel")
-                              datetimepicker(ng-model="startdate" data-datetimepicker-config="{ dropdownSelector: '#dropdown1'}")
-                  div.col-md-6
-                      h4
-                          span.label.label-info To:
-                      div.dropdown
-                          a.dropdown-toggle#dropdown2(role="button" data-toggle="dropdown" data-target="#" href="#")
-                              div.input-group
-                                  input.form-control(type="text" ng-model="enddate")
-                                  span.input-group-addon
-                                      i.glyphicon.glyphicon-calendar
-                          ul.dropdown-menu(role="menu" aria-labelledby="dLabel")
-                              datetimepicker(ng-model="enddate" data-datetimepicker-config="{ dropdownSelector: '#dropdown2'}")
 
-              div.row
-                  div.col-md-5
-                      h4
-                          span.label.label-info Node:
+    div#contol-panel(ng-controller="mapController")
+        div.row
+            div.col-md-6
+                div#map_canvas
+                    map
+            div.col-md-6
+              div.btn-group(style="padding: 5px;")
+                button.btn.btn-primary(type="button" ng-click="startGPSTracking()") Start Tracking
+                button.btn.btn-primary(type="button" ng-click="stopGPSTracking()") Stop Tracking
+                button.btn.btn-primary(type="button" ng-click="showAreas()") Show Areas
+                button.btn.btn-primary(type="button" ng-click="hideAreas()") Hide Areas
+
+              //ul#navi.nav.nav-tabs
+              //  li.active
+              //    a(href="#main" data-toggle="tab") Search GPS
+              //  li
+              //    a(href="#area" data-toggle="tab") Area Control
+
+              //div#content.tab-content
+              //  div#main.tab-pane.fade.in.active
+              tabset
+                tab(heading="Search GPS" active=true)
                   div.row
-                  div.col-md-5
-                      input.form-control(type="text" placeholder="Filter" ng-model="sfilter" style="padding-top:5px;padding-bottom:5px;")
-              div.row
-                  div.col-md-5
-                      select#select-list.form-control(multiple ng-model="selectFromList")
-                          option(ng-repeat="node in nodeList|filter:sfilter" value="{{node}}") {{node}}
-                  div.col-md-2
-                      div(style="padding-top: 5px;")
-                         button.btn.btn-primary(type="button" ng-click="toSearchList()") &nbsp;&nbsp;&nbsp;Add&nbsp;&nbsp;&nbsp;
-                         div(style="padding-top: 5px;")
-                            button.btn.btn-primary(type="button" ng-click="toSelectList()") Remove
-                  div.col-md-5
-                      select#search-list.form-control(multiple ng-model="selectToList")
-                          option(ng-repeat="node in searchList" value="{{node}}") {{node}}
-                      //{{searchList}}
+                      div.col-md-6
+                          h4
+                              span.label.label-info From:
+                          div.dropdown
+                              a.dropdown-toggle#dropdown1(role="button" data-toggle="dropdown" data-target="#" href="#")
+                                  div.input-group
+                                      input.form-control(type="text" ng-model="startdate")
+                                      span.input-group-addon
+                                          i.glyphicon.glyphicon-calendar
+                              ul.dropdown-menu(role="menu" aria-labelledby="dLabel")
+                                  datetimepicker(ng-model="startdate" data-datetimepicker-config="{ dropdownSelector: '#dropdown1'}")
+                      div.col-md-6
+                          h4
+                              span.label.label-info To:
+                          div.dropdown
+                              a.dropdown-toggle#dropdown2(role="button" data-toggle="dropdown" data-target="#" href="#")
+                                  div.input-group
+                                      input.form-control(type="text" ng-model="enddate")
+                                      span.input-group-addon
+                                          i.glyphicon.glyphicon-calendar
+                              ul.dropdown-menu(role="menu" aria-labelledby="dLabel")
+                                  datetimepicker(ng-model="enddate" data-datetimepicker-config="{ dropdownSelector: '#dropdown2'}")
 
-              div.row
-                  div.btn-group(style="padding-top: 5px;")
-                      button.btn.btn-primary(type="button" ng-click="getGPSData()") Search
-                      button.btn.btn-primary(type="button" ng-click="startGPSTracking()") Start Tracking
-                      button.btn.btn-primary(type="button" ng-click="stopGPSTracking()") Stop Tracking
-                      button.btn.btn-primary(type="button" ng-click="showAreas()") Show Areas
-                      button.btn.btn-primary(type="button" ng-click="hideAreas()") Hide Areas
+                  div.row
+                      div.col-md-5
+                          h4
+                              span.label.label-info Node:
+                      div.row
+                      div.col-md-5
+                          input.form-control(type="text" placeholder="Filter" ng-model="sfilter" style="padding-top:5px;padding-bottom:5px;")
+                  div.row
+                      div.col-md-5
+                          select#select-list.form-control(multiple ng-model="selectFromList")
+                              option(ng-repeat="node in nodeList|filter:sfilter" value="{{node}}") {{node}}
+                      div.col-md-2
+                          div(style="padding-top: 5px;")
+                             button.btn.btn-primary(type="button" ng-click="toSearchList()") &nbsp;&nbsp;&nbsp;Add&nbsp;&nbsp;&nbsp;
+                             div(style="padding-top: 5px;")
+                                button.btn.btn-primary(type="button" ng-click="toSelectList()") Remove
+                      div.col-md-5
+                          select#search-list.form-control(multiple ng-model="selectToList")
+                              option(ng-repeat="node in searchList" value="{{node}}") {{node}}
+                          //{{searchList}}
+
+                  div.row
+                    div.col-md-2
+                      br
+                      button.btn.btn-primary(style="padding: 5px;" type="button" ng-click="getGPSData()") Search
+
+
+                //div#area.tab-pane.fade
+                tab(heading="Area Control")
+                  //p This is area control
+                  div.row
+                    div.col-md-8
+                      br
+                      accordion(close-others="true")
+                        accordion-group(ng-repeat="area in markedAreas" heading="{{area.name}}")
+                          div.btn-group(style="padding: 5px;")
+                            button.btn.btn-primary(type="button" ng-click="showOneArea(area.name)") Show
+                            button.btn.btn-primary(type="button" ng-click="hideOneArea(area.name)") Hide
+                            button.btn.btn-primary(type="button" ng-click="deleteArea(area.name)") Delete
+                            button.btn.btn-primary(type="button" ng-click="openSelectContentShow(area)") Contents
+
+                      //select#select-list.form-control(size="{{markedAreas.length == 0 ? 1 : markedAreas.length}}")
+                      //  option(ng-repeat="area in markedAreas" value="{{area.name}}") {{area.name}}
+                      //ul.list-group
+                        //li.list-group-item(ng-repeat="area in markedAreas") {{area.name}}
+                      //{{markedAreas}}
+                      //list-group(items="markedAreas")
 
     include _modal_select_contents

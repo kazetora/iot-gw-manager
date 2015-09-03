@@ -68,9 +68,9 @@ app.controller('mapController', ['$scope','$modal', 'gpsDataService', 'NodeServi
 
 
           //mySocket.emit('add_new_polygon', polycoor);
-          $scope.markedAreas.push(polygon);
 
-          $scope.openSelectContent(polygon);
+
+          $scope.openSelectContent(polygon, true);
         });
 
         var savedAreas = areaService.get({cmd:'getAreas'}, function(){
@@ -79,8 +79,10 @@ app.controller('mapController', ['$scope','$modal', 'gpsDataService', 'NodeServi
             var pol = new google.maps.Polygon({paths:data[i].coords});
             pol.setMap($scope.map);
             pol.setVisible(false);
-            $scope.markedAreas.push(pol);
+            $scope.markedAreas.push({_id: data[i]._id, name: data[i].name, area: pol, cuids: data[i].cuids});
+
           }
+          //$scope.$apply();
         });
     });
 
@@ -102,17 +104,17 @@ app.controller('mapController', ['$scope','$modal', 'gpsDataService', 'NodeServi
           }
         });
 
-        modalInstance.result.then(function(selectedContents) {
-          if(selectedContents.length <= 0 ) {
+        modalInstance.result.then(function(data) {
+          if(data.length <= 0 ) {
             polygon.setMap(null);
             return;
           }
 
-          console.log(selectedContents);
-          var cuids = [];
-          for(var i = 0; i < selectedContents.length; i++) {
-            cuids.push(selectedContents[i].cuid);
-          }
+          console.log(data);
+          // var cuids = [];
+          // for(var i = 0; i < data.length; i++) {
+          //   cuids.push(selectedContents[i].cuid);
+          // }
 
           var vertices = polygon.getPath();
           var polycoor = [];
@@ -127,19 +129,49 @@ app.controller('mapController', ['$scope','$modal', 'gpsDataService', 'NodeServi
 
           var areaData = {
             coords: polycoor,
-            cuids: cuids
+            cuids: data.cuids,
+            name: data.name
           }
 
-          areaService.save({cmd: 'addArea'}, {params: areaData}, function(){
+          var areaId = areaService.save({cmd: 'addArea'}, {params: areaData}, function(){
 
           });
-
+          if(areaId.status == 0)
+            $scope.markedAreas.push({_id: areaId.message, name: data.name, area: polygon, cuids: data.cuids});
+          //$scope.$apply();
         }, function() {
           // remove the polygon
           polygon.setMap(null);
         });
       })
     }
+
+    $scope.openSelectContentShow = function(areaObj) {
+      var _contents = contentsDataService.get({ctype: 'news'}, {},  function(){
+        console.log(_contents);
+        var modalInstance = $modal.open({
+          animation: true,
+          templateUrl: 'selectContentShow.html',
+          controller: 'modalContentsControllerShow',
+          resolve: {
+            contents: function() {
+              return _contents;
+            },
+            selected_cuids: function() {
+              return areaObj.cuids;
+            }
+          }
+        });
+
+        modalInstance.result.then(function() {
+
+        }, function() {
+          // remove the polygon
+          //polygon.setMap(null);
+        });
+      })
+    }
+
     //$scope.gpsdata = {};
     $scope.clearMap = function() {
       $scope.map.data.forEach(function(feature){
@@ -250,7 +282,7 @@ app.controller('mapController', ['$scope','$modal', 'gpsDataService', 'NodeServi
                 var isInArea = false;
                 for(var i = 0; i < $scope.markedAreas.length; i++) {
                   //var ma = new google.maps.Polygon({paths: $scope.markedAreas[i]});
-                  if(google.maps.geometry.poly.containsLocation(geometry, $scope.markedAreas[i]) ) {
+                  if(google.maps.geometry.poly.containsLocation(geometry, $scope.markedAreas[i].area) ) {
                     isInArea = true;
                   }
                 }
@@ -276,20 +308,56 @@ app.controller('mapController', ['$scope','$modal', 'gpsDataService', 'NodeServi
 
     $scope.showAreas = function() {
       for(var i=0; i < $scope.markedAreas.length; i++) {
-        $scope.markedAreas[i].setVisible(true);
+        $scope.markedAreas[i].area.setVisible(true);
       }
     }
 
     $scope.hideAreas = function() {
       for(var i=0; i < $scope.markedAreas.length; i++) {
-        $scope.markedAreas[i].setVisible(false);
+        $scope.markedAreas[i].area.setVisible(false);
       }
     }
 
-    // $scope.deleteArea = function(event) {
-    //   // delete from db
-    //
-    // }
+    $scope.showOneArea = function(area) {
+      for(var i=0; i < $scope.markedAreas.length; i++) {
+        if($scope.markedAreas[i].name === area) {
+          $scope.markedAreas[i].area.setVisible(true);
+          break;
+        }
+      }
+    }
+
+    $scope.hideOneArea = function(area) {
+      for(var i=0; i < $scope.markedAreas.length; i++) {
+        if($scope.markedAreas[i].name === area) {
+          $scope.markedAreas[i].area.setVisible(false);
+          break;
+        }
+      }
+    }
+
+    $scope.deleteArea = function(area) {
+
+      var id = '';
+      var poly = null;
+      var idx = -1;
+      for(var i = 0; i < $scope.markedAreas.length; i++) {
+        if($scope.markedAreas[i].name === area) {
+          id = $scope.markedAreas[i]._id;
+          poly = $scope.markedAreas[i].area;
+          idx = i;
+          break;
+        }
+      }
+      if(idx < 0) return;
+      // delete from db
+      areaService.delete({cmd: 'deleteArea', id: id},{}, function(){
+        // delete from local
+        $scope.markedAreas.splice(idx, 1);
+        // remove from map
+        poly.setMap(null);
+      });
+    }
 
     init();
   }]);
@@ -311,9 +379,10 @@ app.service('contentsDataService', ['$resource', function($resource) {
 }]);
 
 app.service('areaService', ['$resource', function($resource) {
-    return $resource('/areas/:cmd', {}, {
+    return $resource('/areas/:cmd/:id', {}, {
         get: {method: 'GET', isArray: true},
         save: {method: 'POST'},
-        delete: {method: 'DELETE'}
+        delete: {method: 'DELETE'},
+        update: {method: 'POST'}
     });
 }]);
