@@ -1,6 +1,6 @@
 'use strict'
 
-var app = angular.module('iotGwMonitor', ['ngResource', 'btford.socket-io', 'ngMap', 'ui.bootstrap.datetimepicker']);
+var app = angular.module('iotGwMonitor', ['ngResource', 'btford.socket-io', 'ngMap', 'ui.bootstrap', 'listGroup']);
 
 // app.config(function(uiGmapGoogleMapApiProvider) {
 //   uiGmapGoogleMapApiProvider.configure({
@@ -9,6 +9,7 @@ var app = angular.module('iotGwMonitor', ['ngResource', 'btford.socket-io', 'ngM
 //       libraries: 'weather,geometry,visualization'
 //   });
 // });
+app.constant('CONTENTS_API_SERVER', 'https://133.11.240.228/mob/');
 
 app.controller('NodeController', ['$scope', 'NodeService', '$timeout', 'mySocket',
     function($scope, NodeService, $timeout, mySocket){

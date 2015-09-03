@@ -1,0 +1,12 @@
+{
+  "wfms" : {
+    "server": "133.11.240.228",
+    "content_req_uri": "/cms/api/v1/contents",
+    "content_type": {
+      "news": "news",
+      "banner": "banner"
+    },
+    "delivery_req_uri" : "/cms/api/v1/deliveries"
+  }
+
+}

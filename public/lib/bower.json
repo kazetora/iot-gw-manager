@@ -20,6 +20,8 @@
     "ngmap": "~1.7.0",
     "moment": "~2.10.6",
     "angular-bootstrap-datetimepicker": "latest",
-    "lodash": "~3.10.1"
+    "lodash": "~3.10.1",
+    "angular-bootstrap": "~0.13.3",
+    "angular-list-group": "~0.0.1"
   }
 }

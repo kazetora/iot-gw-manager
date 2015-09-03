@@ -13,6 +13,10 @@ var users = require('./routes/users');
 var nodes = require('./routes/nodes');
 var events = require('./routes/events');
 var map = require('./routes/map');
+var contents = require('./routes/contents');
+var areas = require('./routes/areas');
+var template = require('./routes/template');
+//var config = require('config');
 
 var app = express();
 
@@ -38,6 +42,9 @@ app.use('/users', users);
 app.use('/nodes', nodes);
 app.use('/events', events);
 app.use('/map', map);
+app.use('/contents', contents);
+app.use('/areas', areas);
+app.use('/template', template);
 app.use('/static', express.static(path.join(__dirname, 'files')));
 
 // catch 404 and forward to error handler

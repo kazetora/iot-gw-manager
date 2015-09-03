@@ -17,3 +17,7 @@ map {
   font-weight: bold;
   border: 2px;
 }
+
+.list-detail {
+  overflow: hidden;
+}

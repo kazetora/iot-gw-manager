@@ -13,8 +13,8 @@
 // }
 //
 // google.maps.event.addDomListener(window, 'load', initialize);
-app.controller('mapController', ['$scope', 'gpsDataService', 'NodeService', 'mySocket',
-  function($scope, gpsDataService, NodeService, mySocket){
+app.controller('mapController', ['$scope','$modal', 'gpsDataService', 'NodeService', 'contentsDataService', 'areaService', 'mySocket',
+  function($scope, $modal, gpsDataService, NodeService, contentsDataService, areaService, mySocket){
     var mapopt = { center: {lat: 35.708124, lng:139.762660}, zoom: 8};
 
     var init = function() {
@@ -25,12 +25,14 @@ app.controller('mapController', ['$scope', 'gpsDataService', 'NodeService', 'myS
       $scope.selectToList = [];
       $scope.nodeList = [];
       $scope.gpsTrackData = {};
+      $scope.gpsTrackStart = false;
       $scope.markedAreas = [];
       $scope.incStatus = "";
       mySocket.forward('gpsTrace', $scope);
       $scope.$on('socket:gpsTrace', function(ev, data){
         //console.log(data);
-        $scope.showGPSTracking(data);
+        if($scope.gpsTrackStart)
+          $scope.showGPSTracking(data);
       })
     }
     // uiGmapGoogleMapApi.then(function(maps) {
@@ -63,6 +65,55 @@ app.controller('mapController', ['$scope', 'gpsDataService', 'NodeService', 'myS
         google.maps.event.addListener(drawingManager, 'polygoncomplete', function(polygon){
           //var paths = polygon.getPaths();
           //console.log(paths);
+
+
+          //mySocket.emit('add_new_polygon', polycoor);
+          $scope.markedAreas.push(polygon);
+
+          $scope.openSelectContent(polygon);
+        });
+
+        var savedAreas = areaService.get({cmd:'getAreas'}, function(){
+          var data = savedAreas;
+          for(var i =0; i < data.length; i++) {
+            var pol = new google.maps.Polygon({paths:data[i].coords});
+            pol.setMap($scope.map);
+            pol.setVisible(false);
+            $scope.markedAreas.push(pol);
+          }
+        });
+    });
+
+    $scope.startdate = moment();
+    $scope.enddate = moment();
+
+    //console.log($scope.startdate, $scope.enddate);
+    $scope.openSelectContent = function(polygon) {
+      var _contents = contentsDataService.get({ctype: 'news'}, {},  function(){
+        console.log(_contents);
+        var modalInstance = $modal.open({
+          animation: true,
+          templateUrl: 'selectContent.html',
+          controller: 'modalContentsController',
+          resolve: {
+            contents: function() {
+              return _contents;
+            }
+          }
+        });
+
+        modalInstance.result.then(function(selectedContents) {
+          if(selectedContents.length <= 0 ) {
+            polygon.setMap(null);
+            return;
+          }
+
+          console.log(selectedContents);
+          var cuids = [];
+          for(var i = 0; i < selectedContents.length; i++) {
+            cuids.push(selectedContents[i].cuid);
+          }
+
           var vertices = polygon.getPath();
           var polycoor = [];
           for(var i =0; i< vertices.length; i++) {
@@ -73,16 +124,22 @@ app.controller('mapController', ['$scope', 'gpsDataService', 'NodeService', 'myS
             });
           }
           console.dir(polycoor);
-          $scope.markedAreas = polycoor;
-          //mySocket.emit('add_new_polygon', polycoor);
+
+          var areaData = {
+            coords: polycoor,
+            cuids: cuids
+          }
+
+          areaService.save({cmd: 'addArea'}, {params: areaData}, function(){
+
+          });
+
+        }, function() {
+          // remove the polygon
+          polygon.setMap(null);
         });
-    });
-
-    $scope.startdate = moment();
-    $scope.enddate = moment();
-
-    //console.log($scope.startdate, $scope.enddate);
-
+      })
+    }
     //$scope.gpsdata = {};
     $scope.clearMap = function() {
       $scope.map.data.forEach(function(feature){
@@ -94,7 +151,9 @@ app.controller('mapController', ['$scope', 'gpsDataService', 'NodeService', 'myS
 
     };
     $scope.getGPSData = function() {
-      //window.alert("aaaa");
+      // first stop gps tracking
+      $scope.stopGPSTracking();
+
       var params = {
         node_ids: $scope.searchList,
         startdate: $scope.startdate,
@@ -108,18 +167,6 @@ app.controller('mapController', ['$scope', 'gpsDataService', 'NodeService', 'myS
                           $scope.map.setCenter(geojson.center);
                           $scope.map.data.addGeoJson(geojson.data);
 
-                      });
-    };
-    $scope.getGPSData2 = function() {
-      //window.alert("aaaa");
-      $scope.clearMap();
-      var geojson = gpsDataService.get({
-                      node_id: "edison0500",
-                      startdate: "2015-08-08T16:00:00+09:00",
-                      enddate:   "2015-08-08T19:00:00+09:00"},
-                      function(){
-                        //$scope.map.data.clear();
-                          $scope.map.data.addGeoJson(geojson);
                       });
     };
 
@@ -169,13 +216,20 @@ app.controller('mapController', ['$scope', 'gpsDataService', 'NodeService', 'myS
     }
 
     $scope.startGPSTracking = function() {
+      if(!$scope.gpsTrackStart) {
+        $scope.gpsTrackStart = true;
         console.log("start gps tracking");
         mySocket.emit("start_gps_tracking");
+      }
     }
 
     $scope.stopGPSTracking = function() {
+      if($scope.gpsTrackStart) {
+        $scope.gpsTrackStart = false;
         console.log("stop gps tracking");
         mySocket.emit("stop_gps_tracking");
+        $scope.clearMap();
+      }
     }
 
     $scope.showGPSTracking = function(data) {
@@ -193,8 +247,14 @@ app.controller('mapController', ['$scope', 'gpsDataService', 'NodeService', 'myS
               var geometry = feature.getGeometry().get();
               console.log(geometry);
               if($scope.markedAreas.length > 0) {
-                var ma = new google.maps.Polygon({paths: $scope.markedAreas});
-                var color = google.maps.geometry.poly.containsLocation(geometry, ma) ? 'red' : 'blue';
+                var isInArea = false;
+                for(var i = 0; i < $scope.markedAreas.length; i++) {
+                  //var ma = new google.maps.Polygon({paths: $scope.markedAreas[i]});
+                  if(google.maps.geometry.poly.containsLocation(geometry, $scope.markedAreas[i]) ) {
+                    isInArea = true;
+                  }
+                }
+                var color = isInArea ? 'red' : 'blue';
               }
               else {
                 var color = 'blue';
@@ -214,6 +274,23 @@ app.controller('mapController', ['$scope', 'gpsDataService', 'NodeService', 'myS
         }
     }
 
+    $scope.showAreas = function() {
+      for(var i=0; i < $scope.markedAreas.length; i++) {
+        $scope.markedAreas[i].setVisible(true);
+      }
+    }
+
+    $scope.hideAreas = function() {
+      for(var i=0; i < $scope.markedAreas.length; i++) {
+        $scope.markedAreas[i].setVisible(false);
+      }
+    }
+
+    // $scope.deleteArea = function(event) {
+    //   // delete from db
+    //
+    // }
+
     init();
   }]);
 
@@ -223,4 +300,20 @@ app.service('gpsDataService', ['$resource', function($resource) {
       //save: {method: 'POST'},
       //delete: {method: 'DELETE'}
   });
+}]);
+
+app.service('contentsDataService', ['$resource', function($resource) {
+  return $resource('/contents/getContents/:ctype', {}, {
+      get: {method: 'GET', isArray: true}
+      //save: {method: 'POST'},
+      //delete: {method: 'DELETE'}
+  });
+}]);
+
+app.service('areaService', ['$resource', function($resource) {
+    return $resource('/areas/:cmd', {}, {
+        get: {method: 'GET', isArray: true},
+        save: {method: 'POST'},
+        delete: {method: 'DELETE'}
+    });
 }]);
