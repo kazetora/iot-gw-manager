@@ -29,12 +29,45 @@ app.set('port', port);
 var server = https.createServer(sslOptions, app);
 var io = require("socket.io")(server);
 
+var GPSTrackingStart = false;
+//var markedAreas = [];
+//var GPSTrackingRoom = "gpsTracking";
+
 io.on("connection", function(socket){
     console.log("Client connected");
+    if(GPSTrackingStart) {
+      socket.emit('gps_tracking_start');
+    }
+    else {
+      socket.emit('gps_tracking_stop');
+    }
+
     socket.on("update_complete", function(){
         console.log("update completed");
         socket.emit("update_received");
         socket.broadcast.emit('ip_update');
+    });
+
+    socket.on("start_gps_tracking", function(){
+      console.log("Start GPS Tracking");
+      GPSTrackingStart = true;
+      socket.broadcast.emit('gps_tracking_start');
+    });
+
+    socket.on("stop_gps_tracking", function(){
+      console.log("Stop GPS Tracking");
+      GPSTrackingStart = false;
+      socket.broadcast.emit('gps_tracking_stop');
+    });
+
+    socket.on("gps_trace", function(gps){
+      console.log(gps);
+      //var inside = require('turf-inside');
+      socket.broadcast.emit('gpsTrace', gps);
+    });
+
+    socket.on("add_new_polygon", function(coords) {
+      //markedAreas = coords;
     });
 });
 
@@ -105,4 +138,3 @@ function onListening() {
     : 'port ' + addr.port;
   debug('Listening on ' + bind);
 }
-

@@ -1,0 +1,22 @@
+script(type="text/ng-template" id="selectContent.html")
+  div.modal-header
+    h3.modal-title Select contents
+  div.modal-body
+    div.input-group
+      span.input-group-addon Area Name
+      input.form-control(type="text" placeholder="Type Area Name here" ng-model="areaName")
+    //{{areaName}}
+    br
+    list-group(items="contents" selectable="multiple" template-url="viewTemplate" selected-items="selectedContents")
+  div.modal-footer
+    button.btn.btn-primary(type="button" ng-click="ok()") OK
+    button.btn.btn-warning(type="button" ng-click="cancel()") Cancel
+
+script(type="text/ng-template" id="selectContentShow.html")
+  div.modal-header
+    h3.modal-title Contents
+  div.modal-body
+    list-group(items="contents" template-url="viewTemplate" )
+  div.modal-footer
+    button.btn.btn-primary(type="button" ng-click="ok()") OK
+    //button.btn.btn-warning(type="button" ng-click="cancel()") Cancel
