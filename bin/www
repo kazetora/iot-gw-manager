@@ -73,10 +73,13 @@ io.on("connection", function(socket){
     });
 
     socket.on("area/fetch", function(){
+      console.log("fetching area");
       var area = require("../models/area");
-      var Area = new area.Area();
-      var data = Area.getArray();
-      socket.emit('area/fetch', data);
+      var Area = new area();
+      Area.getArray(function(data){
+          console.log(data);
+          socket.emit('area/fetch', data);
+      });
     });
 });
 
