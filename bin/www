@@ -10,6 +10,8 @@ var debug = require('debug')('serverWatcher:server');
 var https = require('https');
 var fs = require('fs');
 
+var area = require("../models/area");
+
 var sslOptions = {
     key: fs.readFileSync(__dirname + '/../ssl/server.key'),
     cert: fs.readFileSync(__dirname + '/../ssl/server.crt')
