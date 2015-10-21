@@ -71,6 +71,13 @@ io.on("connection", function(socket){
     socket.on("add_new_polygon", function(coords) {
       //markedAreas = coords;
     });
+
+    socket.on("area/fetch", function(){
+      var area = require("../models/area");
+      var Area = new area.Area();
+      var data = Area.getArray();
+      socket.emit('area/fetch', data);
+    });
 });
 
 /**
