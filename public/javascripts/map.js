@@ -138,16 +138,17 @@ app.controller('mapController', ['$scope','$modal', 'gpsDataService', 'NodeServi
           }
 
           var newArea = areaService.save({cmd: 'addArea'}, {params: areaData}, function(){
-            console.log(newArea);
+            console.log("reg area", newArea);
             var newAreaData = newArea.data;
             if(newArea.status == 0)
               $scope.markedAreas.push({
-                                        _id: newAreaData.data._id,
+                                        _id: newAreaData._id,
                                         name: newAreaData.name,
                                         area: polygon,
                                         cuids: newAreaData.cuids,
                                         area_id: newAreaData.area_id
                                       });
+              console.log("socket emit area/add");
               mySocket.emit("area/add", newAreaData);
             //$scope.$apply();
           });
