@@ -68,8 +68,12 @@ io.on("connection", function(socket){
       socket.broadcast.emit('gpsTrace', gps);
     });
 
-    socket.on("add_new_polygon", function(coords) {
-      //markedAreas = coords;
+    socket.on("area/add", function(data) {
+      socket.broadcast.emit("area/add", data)
+    });
+
+    socket.on("area/delete", function(data) {
+      socket.broadcast.emit("area/delete", data)
     });
 
     socket.on("area/fetch", function(){

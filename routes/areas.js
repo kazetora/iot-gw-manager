@@ -12,12 +12,13 @@ router.get('/getAreas', function(req, res, next) {
 router.post('/addArea', function(req, res, next) {
     console.log(req.body);
     var params = req.body.params;
-    var response = {status:0, message:""};
+    var response = {status:0, message:"OK", data: null};
     var db = req.db;
     var insert_data = {
         coords: params.coords,
         cuids : params.cuids,
-        name  : params.name
+        name  : params.name,
+        area_id : shortid.generate()
     }
     db.collection('areas').insert(insert_data, function(err, result){
 
@@ -26,7 +27,7 @@ router.post('/addArea', function(req, res, next) {
             response.message = err;
         }
         else {
-            response.message= result[0]._id;
+            response.data = result[0];
         }
         //console.dir(result);
         res.send(response);
