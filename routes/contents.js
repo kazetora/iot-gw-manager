@@ -26,7 +26,7 @@ router.get('/getContents/:ctype/:cuid?', function(req, res, next) {
       if(!Array.isArray(data)) {
         data = [data];
       }
-      console.log(data);
+      //console.log(data);
 
       res.send(data);
     });
@@ -52,7 +52,7 @@ router.get('/getDeliveries/:cid?', function(req, res, next) {
     }
     console.log(get_content_url);
     client.get(get_content_url, function(data, response){
-      console.log(data.toString());
+      //console.log(data.toString());
       res.send(data);
     })
 

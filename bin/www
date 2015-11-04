@@ -10,6 +10,8 @@ var debug = require('debug')('serverWatcher:server');
 var https = require('https');
 var fs = require('fs');
 
+var area = require("../models/area");
+
 var sslOptions = {
     key: fs.readFileSync(__dirname + '/../ssl/server.key'),
     cert: fs.readFileSync(__dirname + '/../ssl/server.crt')
@@ -66,8 +68,22 @@ io.on("connection", function(socket){
       socket.broadcast.emit('gpsTrace', gps);
     });
 
-    socket.on("add_new_polygon", function(coords) {
-      //markedAreas = coords;
+    socket.on("area/add", function(data) {
+      socket.broadcast.emit("area/add", data)
+    });
+
+    socket.on("area/delete", function(data) {
+      socket.broadcast.emit("area/delete", data)
+    });
+
+    socket.on("area/fetch", function(){
+      console.log("fetching area");
+      var area = require("../models/area");
+      var Area = new area();
+      Area.getArray(function(data){
+          console.log(data);
+          socket.emit('area/fetch', data);
+      });
     });
 });
 

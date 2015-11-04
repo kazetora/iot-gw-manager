@@ -137,10 +137,19 @@ app.controller('mapController', ['$scope','$modal', 'gpsDataService', 'NodeServi
             name: data.name
           }
 
-          var areaId = areaService.save({cmd: 'addArea'}, {params: areaData}, function(){
-            console.log(areaId);
-            if(areaId.status == 0)
-              $scope.markedAreas.push({_id: areaId.message, name: data.name, area: polygon, cuids: data.cuids});
+          var newArea = areaService.save({cmd: 'addArea'}, {params: areaData}, function(){
+            console.log("reg area", newArea);
+            var newAreaData = newArea.data;
+            if(newArea.status == 0)
+              $scope.markedAreas.push({
+                                        _id: newAreaData._id,
+                                        name: newAreaData.name,
+                                        area: polygon,
+                                        cuids: newAreaData.cuids,
+                                        area_id: newAreaData.area_id
+                                      });
+              console.log("socket emit area/add");
+              mySocket.emit("area/add", newAreaData);
             //$scope.$apply();
           });
 
@@ -343,13 +352,16 @@ app.controller('mapController', ['$scope','$modal', 'gpsDataService', 'NodeServi
 
     $scope.deleteArea = function(area) {
 
-      var id = '';
-      var poly = null;
-      var idx = -1;
+      var id = '',
+          area_id ='',
+          poly = null,
+          idx = -1;
+
       for(var i = 0; i < $scope.markedAreas.length; i++) {
         if($scope.markedAreas[i].name === area) {
           id = $scope.markedAreas[i]._id;
           poly = $scope.markedAreas[i].area;
+          area_id = $scope.markedAreas[i].area_id;
           idx = i;
           break;
         }
@@ -361,6 +373,8 @@ app.controller('mapController', ['$scope','$modal', 'gpsDataService', 'NodeServi
         $scope.markedAreas.splice(idx, 1);
         // remove from map
         poly.setMap(null);
+        // update area cache on devices
+        mySocket.emit("area/delete", area_id)
       });
     }
 
