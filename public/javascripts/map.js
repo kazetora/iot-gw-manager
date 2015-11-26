@@ -37,7 +37,7 @@ app.controller('mapController', ['$scope','$modal', 'gpsDataService', 'NodeServi
       $scope.$on('socket:gpsTrace', function(ev, data){
         //console.log(data);
         if($scope.gpsTrackStart)
-          $scope.showGPSTracking(data);
+          $scope.updateGPSTrackingData(data);
       })
     }
     // uiGmapGoogleMapApi.then(function(maps) {
@@ -278,8 +278,13 @@ app.controller('mapController', ['$scope','$modal', 'gpsDataService', 'NodeServi
       }
     }
 
-    $scope.showGPSTracking = function(data) {
-        $scope.gpsTrackData[data.id] = data;
+    $scope.updateGPSTrackingData = function(data){
+      $scope.gpsTrackData = data;
+      $scope.showGPSTracking();
+    }
+
+    $scope.showGPSTracking = function() {
+        //$scope.gpsTrackData[data.id] = data;
         $scope.clearMap();
         for(var nodeid in $scope.gpsTrackData) {
           var gj = GeoJSON.parse([$scope.gpsTrackData[nodeid]], {Point: ['lat', 'lng']});

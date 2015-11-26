@@ -35,6 +35,10 @@ var GPSTrackingStart = false;
 //var markedAreas = [];
 //var GPSTrackingRoom = "gpsTracking";
 
+var GPSTrackingData = {};
+
+var sendGPSTrackingInterval = null;
+
 io.on("connection", function(socket){
     console.log("Client connected");
     if(GPSTrackingStart) {
@@ -54,18 +58,26 @@ io.on("connection", function(socket){
       console.log("Start GPS Tracking");
       GPSTrackingStart = true;
       socket.broadcast.emit('gps_tracking_start');
+      if(sendGPSTrackingInterval === null) {
+          sendGPSTrackingInterval = setInterval(function(){
+              io.sockets.emit("gpsTrace", GPSTrackingData);
+          }, 3000);
+      }
     });
 
     socket.on("stop_gps_tracking", function(){
       console.log("Stop GPS Tracking");
       GPSTrackingStart = false;
       socket.broadcast.emit('gps_tracking_stop');
+      clearInterval(sendGPSTrackingInterval);
+      sendGPSTrackingInterval = null;
     });
 
     socket.on("gps_trace", function(gps){
-      console.log(gps);
+      //console.log(gps);
       //var inside = require('turf-inside');
-      socket.broadcast.emit('gpsTrace', gps);
+      //socket.broadcast.emit('gpsTrace', gps);
+      GPSTrackingData[gps.id] = gps;
     });
 
     socket.on("area/add", function(data) {

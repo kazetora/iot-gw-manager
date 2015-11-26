@@ -5,9 +5,10 @@ block content
 
     div#contol-panel(ng-controller="mapController")
         div.row
-            div.col-md-6
+            div.col-md-12
                 div#map_canvas
                     map
+        div.row
             div.col-md-6
               div.btn-group(style="padding: 5px;")
                 button.btn.btn-primary(type="button" ng-click="startGPSTracking()") Start Tracking
