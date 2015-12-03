@@ -61,4 +61,19 @@ router.post('/updateArea/:id', function(req, res, next) {
   });
 });
 
+router.post('/updateContentCuids/:area_id', function(req, res, next) {
+  var db = req.db;
+  var target = req.params.area_id;
+  var new_cuids = req.body.cuids;
+  db.collection('areas').update({area_id: target}, {$set: {cuids: new_cuids}}, function(err, result) {
+    if(err) {
+      console.log(err);
+      res.send(err);
+    }
+    else {
+      res.send("updated");
+    }
+  });
+});
+
 module.exports = router;
