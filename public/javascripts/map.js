@@ -285,44 +285,47 @@ app.controller('mapController', ['$scope','$modal', 'gpsDataService', 'NodeServi
 
     $scope.showGPSTracking = function() {
         //$scope.gpsTrackData[data.id] = data;
+
+        var data_arr = Object.keys($scope.gpsTrackData).map(function(key){return $scope.gpsTrackData[key];});
+        // for(var nodeid in $scope.gpsTrackData) {
+        //   data_arr.push($scope.gpsTrackData[nodeid]);
+        // }
+        var gj = GeoJSON.parse(data_arr, {Point: ['lat', 'lng']});
+        //console.log(gj);
         $scope.clearMap();
-        for(var nodeid in $scope.gpsTrackData) {
-          var gj = GeoJSON.parse([$scope.gpsTrackData[nodeid]], {Point: ['lat', 'lng']});
-          //console.log(gj);
-          $scope.map.data.addGeoJson(gj);
-          //var label = new ELabel(new google.maps.LatLng($scope.gpsTrackData[nodeid].lat, $scope.gpsTrackData[nodeid].lng),
-          //                        $scope.gpsTrackData[nodeid].id, "style1");
-          //$scope.map.addOverlay(label);
-          $scope.map.data.setStyle(function(feature) {
-              var title = feature.getProperty('id');
-              var geometry = feature.getGeometry().get();
-              console.log(geometry);
-              if($scope.markedAreas.length > 0) {
-                var isInArea = false;
-                for(var i = 0; i < $scope.markedAreas.length; i++) {
-                  //var ma = new google.maps.Polygon({paths: $scope.markedAreas[i]});
-                  if(google.maps.geometry.poly.containsLocation(geometry, $scope.markedAreas[i].area) ) {
-                    isInArea = true;
-                  }
+        $scope.map.data.addGeoJson(gj);
+        //var label = new ELabel(new google.maps.LatLng($scope.gpsTrackData[nodeid].lat, $scope.gpsTrackData[nodeid].lng),
+        //                        $scope.gpsTrackData[nodeid].id, "style1");
+        //$scope.map.addOverlay(label);
+        $scope.map.data.setStyle(function(feature) {
+            var title = feature.getProperty('id');
+            var geometry = feature.getGeometry().get();
+            console.log(geometry);
+            if($scope.markedAreas.length > 0) {
+              var isInArea = false;
+              for(var i = 0; i < $scope.markedAreas.length; i++) {
+                //var ma = new google.maps.Polygon({paths: $scope.markedAreas[i]});
+                if(google.maps.geometry.poly.containsLocation(geometry, $scope.markedAreas[i].area) ) {
+                  isInArea = true;
                 }
-                var color = isInArea ? 'red' : 'blue';
               }
-              else {
-                var color = 'blue';
-              }
-              return {
-                  title: title,
-                  icon: {
-                    path: google.maps.SymbolPath.CIRCLE,
-                    fillColor: color,
-                    fillOpacity: 1,
-                    strokeColor: 'black',
-                    strokeWeight: .5,
-                    scale: 7
-                  }
-              };
-          });
-        }
+              var color = isInArea ? 'red' : 'blue';
+            }
+            else {
+              var color = 'blue';
+            }
+            return {
+                title: title,
+                icon: {
+                  path: google.maps.SymbolPath.CIRCLE,
+                  fillColor: color,
+                  fillOpacity: 1,
+                  strokeColor: 'black',
+                  strokeWeight: .5,
+                  scale: 7
+                }
+            };
+        });
     }
 
     $scope.showAreas = function() {
