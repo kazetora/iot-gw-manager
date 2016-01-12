@@ -117,7 +117,7 @@ app.controller('mapController', ['$scope','$modal', 'gpsDataService', 'NodeServi
                  for(var i=0; i < $scope.markedAreas.length; i++) {
                    if($scope.markedAreas[i].name === area.name) {
                      $scope.markedAreas[i].cuids = data.cuids;
-                     mySocket.emit("area/fetch_update");
+                     mySocket.emit("area/fetch_update", area.area_id);
                      break;
                    }
                  }

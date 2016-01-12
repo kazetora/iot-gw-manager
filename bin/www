@@ -97,13 +97,15 @@ io.on("connection", function(socket){
           socket.emit('area/fetch', data);
       });
     });
-    socket.on("area/fetch_update", function(){
+    socket.on("area/fetch_update", function(area_id){
       console.log("refetching area");
       var area = require("../models/area");
       var Area = new area();
-      Area.getArray(function(data){
+      Area.getSingleEntry({area_id: area_id},function(data){
           console.log(data);
-          socket.broadcast.emit('area/fetch', data);
+          if(data) {
+              socket.broadcast.emit("area/add", data);
+          }
       });
     });
 });

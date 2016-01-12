@@ -14,19 +14,19 @@ BaseModel.prototype._init = function() {
  * Return first entry
  * @params filter object
  */
-BaseModel.prototype.getSingleEntry = function (callback, filter) {
+BaseModel.prototype.getSingleEntry = function (filter, callback) {
   var _self = this;
   if (typeof filter === 'undefined') {
     filter = {};
   }
-  _self.getArray(filter, function(items){
+  _self.getArray(function(items){
       if(items.length > 0) {
         callback(items[0]);
       }
       else {
         callback({});
       }
-  });
+  }, filter);
 }
 
 /*
