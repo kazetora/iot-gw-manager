@@ -3,6 +3,28 @@ var express = require('express');
 var router = express.Router();
 var config = require('config');
 
+function getDeliveries(cid, onSuccess, onError) {
+  var Client = require('node-rest-client').Client;
+  client = new Client();
+  var wfms = config.get('wfms');
+  var get_content_url = "https://" + wfms.server + wfms.delivery_req_uri;// + "/" + wfms.content_type.news;
+  if(cid) {
+      get_content_url += "/" + cid;
+  }
+  console.log(get_content_url);
+  var request = client.get(get_content_url, function(data, response){
+    //console.log(data.toString());
+    //res.send(data);
+    onSuccess(data);
+  })
+
+  request.on("error", function(err){
+    console.log('request error', err);
+    //res.send(error);
+    onError(error);
+  })
+}
+
 router.get('/getContents/:ctype/:cuid?', function(req, res, next) {
     // var db = req.db;
     // db.collection('nodes').find().toArray(function (err, items) {
@@ -22,43 +44,57 @@ router.get('/getContents/:ctype/:cuid?', function(req, res, next) {
         get_content_url += "/" + cuid;
     }
     console.log(get_content_url);
-    var req = client.get(get_content_url, function(data, response){
+    var request = client.get(get_content_url, function(data, response){
       if(!Array.isArray(data)) {
         data = [data];
       }
       //console.log(data);
+      var final_data = [];
+      getDeliveries("", function(deliveries) {
+          var valid_cuids = [];
+          var async = require("async");
 
-      res.send(data);
+          var process_data = function(cdata, ddata, onComplete) {
+              async.each(cdata, 
+                 function(item, callback) {
+                     if(ddata.indexOf(item.cuid) >=0 && item.status == "published") {
+                         final_data.push(item);
+                     }
+                     callback();
+                 },
+                 function(err) {
+                     onComplete();
+                 }
+              );
+          }
+          async.each(deliveries, 
+             function(item,callback) {
+                 valid_cuids.push(item['cuid']);
+                 callback();
+             },
+             function(err) {
+                 process_data(data, valid_cuids, function() { res.send(final_data); });
+             }
+          );
+             
+          //res.send(data);
+      }, function(err) {
+         res.send(err);
+      });
     });
 
-    req.on("error", function(err){
+    request.on("error", function(err){
       console.log('request error', err);
       res.send(error);
     })
 });
 
 router.get('/getDeliveries/:cid?', function(req, res, next) {
-    // var db = req.db;
-    // db.collection('nodes').find().toArray(function (err, items) {
-    //     res.json(items);
-    // });
     var cid = req.params.cid;
-    var Client = require('node-rest-client').Client;
-    client = new Client();
-    var wfms = config.get('wfms');
-    var get_content_url = "https://" + wfms.server + wfms.delivery_req_uri;// + "/" + wfms.content_type.news;
-    if(cid) {
-        get_content_url += "/" + cid;
-    }
-    console.log(get_content_url);
-    client.get(get_content_url, function(data, response){
-      //console.log(data.toString());
+    getDeliveries(cid, function(data){
       res.send(data);
-    })
-
-    req.on("error", function(err){
-      console.log('request error', err);
+    }, function(err){
       res.send(error);
-    })
+    });
 });
 module.exports = router;

@@ -84,7 +84,7 @@ app.controller('mapController', ['$scope','$modal', 'gpsDataService', 'NodeServi
             var pol = new google.maps.Polygon({paths:data[i].coords});
             pol.setMap($scope.map);
             pol.setVisible(false);
-            $scope.markedAreas.push({_id: data[i]._id, name: data[i].name, area: pol, cuids: data[i].cuids});
+            $scope.markedAreas.push({_id: data[i]._id, name: data[i].name, area: pol, cuids: data[i].cuids, area_id: data[i].area_id});
 
           }
           //$scope.$apply();
@@ -92,6 +92,40 @@ app.controller('mapController', ['$scope','$modal', 'gpsDataService', 'NodeServi
     });
 
 
+    $scope.openSelectContentEditArea = function(area) {
+      console.log(area);
+      var _contents = contentsDataService.get({ctype: 'news'}, {},  function(){
+        console.log(_contents);
+        var modalInstance = $modal.open({
+          animation: true,
+          templateUrl: 'selectContent.html',
+          controller: 'modalContentsController',
+          resolve: {
+            contents: function() {
+              return _contents;
+            },
+            areaName: function() {
+              return area.name;
+            }
+          }
+        });
+        modalInstance.result.then(function(data) {
+           areaService.update(
+              {cmd: "updateContentCuids", id: area.area_id}, 
+              {cuids: data.cuids},
+              function() {
+                 for(var i=0; i < $scope.markedAreas.length; i++) {
+                   if($scope.markedAreas[i].name === area.name) {
+                     $scope.markedAreas[i].cuids = data.cuids;
+                     mySocket.emit("area/fetch_update");
+                     break;
+                   }
+                 }
+              }
+           );
+        });
+      }, function(){});
+    }
 
     //console.log($scope.startdate, $scope.enddate);
     $scope.openSelectContent = function(polygon) {
@@ -104,6 +138,9 @@ app.controller('mapController', ['$scope','$modal', 'gpsDataService', 'NodeServi
           resolve: {
             contents: function() {
               return _contents;
+            },
+            areaName: function() {
+              return "";
             }
           }
         });
@@ -353,6 +390,15 @@ app.controller('mapController', ['$scope','$modal', 'gpsDataService', 'NodeServi
       for(var i=0; i < $scope.markedAreas.length; i++) {
         if($scope.markedAreas[i].name === area) {
           $scope.markedAreas[i].area.setVisible(false);
+          break;
+        }
+      }
+    }
+
+    $scope.editContentinArea = function(area) {
+      for(var i=0; i < $scope.markedAreas.length; i++) {
+        if($scope.markedAreas[i].name === area) {
+          $scope.openSelectContentEditArea($scope.markedAreas[i]);
           break;
         }
       }
