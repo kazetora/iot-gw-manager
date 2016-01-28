@@ -34,6 +34,7 @@ app.controller('mapController', ['$scope','$modal', 'gpsDataService', 'NodeServi
     var init = function() {
       $scope.updateList();
       mySocket.forward('gpsTrace', $scope);
+      mySocket.emit("client/join_ui");
       $scope.$on('socket:gpsTrace', function(ev, data){
         //console.log(data);
         if($scope.gpsTrackStart)

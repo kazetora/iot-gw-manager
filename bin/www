@@ -48,6 +48,12 @@ io.on("connection", function(socket){
       socket.emit('gps_tracking_stop');
     }
 
+    socket.on("client/join_ui", function(){
+      socket.join("_room_ui", function(){
+        console.log("UI joined");
+      });
+    });
+
     socket.on("update_complete", function(){
         console.log("update completed");
         socket.emit("update_received");
@@ -60,7 +66,8 @@ io.on("connection", function(socket){
       socket.broadcast.emit('gps_tracking_start');
       if(sendGPSTrackingInterval === null) {
           sendGPSTrackingInterval = setInterval(function(){
-              io.sockets.emit("gpsTrace", GPSTrackingData);
+              //io.sockets.emit("gpsTrace", GPSTrackingData);
+              io.to("_room_ui").emit("gpsTrace", GPSTrackingData);
           }, 3000);
       }
     });
