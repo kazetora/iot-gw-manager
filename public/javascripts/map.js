@@ -13,8 +13,8 @@
 // }
 //
 // google.maps.event.addDomListener(window, 'load', initialize);
-app.controller('mapController', ['$scope','$modal', 'gpsDataService', 'NodeService', 'contentsDataService', 'areaService', 'mySocket',
-  function($scope, $modal, gpsDataService, NodeService, contentsDataService, areaService, mySocket){
+app.controller('mapController', ['$scope','$modal', '$document', 'gpsDataService', 'NodeService', 'contentsDataService', 'areaService', 'mySocket',
+  function($scope, $modal, $document, gpsDataService, NodeService, contentsDataService, areaService, mySocket){
     var mapopt = { center: {lat: 35.708124, lng:139.762660}, zoom: 8};
 
     $scope.sfilter = "";
@@ -50,6 +50,8 @@ app.controller('mapController', ['$scope','$modal', 'gpsDataService', 'NodeServi
         map.setZoom(mapopt.zoom);
         //map.data.loadGeoJson('/events/getGeoJson/edison0500?startdate=2015-08-07T18:00:00%2B09:00&enddate=2015-08-07T19:00:00%2B09:00');
         //$scope.map = map;
+
+
         var drawingManager = new google.maps.drawing.DrawingManager({
           drawingMode: null,
           drawingControl: true,
@@ -66,6 +68,31 @@ app.controller('mapController', ['$scope','$modal', 'gpsDataService', 'NodeServi
           },
         });
         drawingManager.setMap(map);
+        var input = $document.find("#search-input");
+        var searchBox = new google.maps.places.SearchBox(input[0]);
+        map.controls[google.maps.ControlPosition.TOP_LEFT].push(input[0]);
+
+        map.addListener('bounds_changed', function() {
+          searchBox.setBounds(map.getBounds());
+        });
+
+        searchBox.addListener('places_changed', function() {
+          var places = searchBox.getPlaces();
+
+          if (places.length == 0) {
+            return;
+          }
+          var bounds = new google.maps.LatLngBounds();
+          places.forEach(function(place) {
+            if (place.geometry.viewport) {
+              // Only geocodes have viewport.
+              bounds.union(place.geometry.viewport);
+            } else {
+              bounds.extend(place.geometry.location);
+            }
+          });
+          map.fitBounds(bounds);
+        });
 
         google.maps.event.addListener(drawingManager, 'polygoncomplete', function(polygon){
           //var paths = polygon.getPaths();
@@ -111,7 +138,7 @@ app.controller('mapController', ['$scope','$modal', 'gpsDataService', 'NodeServi
         });
         modalInstance.result.then(function(data) {
            areaService.update(
-              {cmd: "updateContentCuids", id: area.area_id}, 
+              {cmd: "updateContentCuids", id: area.area_id},
               {cuids: data.cuids},
               function() {
                  for(var i=0; i < $scope.markedAreas.length; i++) {
