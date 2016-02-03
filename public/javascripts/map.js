@@ -30,6 +30,7 @@ app.controller('mapController', ['$scope','$modal', '$document', 'gpsDataService
     $scope.gpsTrackStart = false;
     $scope.markedAreas = [];
     $scope.incStatus = "";
+    $scope.overlay_show = false;
 
     var init = function() {
       $scope.updateList();
@@ -49,8 +50,16 @@ app.controller('mapController', ['$scope','$modal', '$document', 'gpsDataService
         map.setCenter(mapopt.center);
         map.setZoom(mapopt.zoom);
         //map.data.loadGeoJson('/events/getGeoJson/edison0500?startdate=2015-08-07T18:00:00%2B09:00&enddate=2015-08-07T19:00:00%2B09:00');
-        //$scope.map = map;
+        $scope.map = map;
+        $scope.layer = new google.maps.FusionTablesLayer({
+          query: {
+            select: 'latitude',
+            from: '1bfIp52n56S4F02Ncyz9kErozHNZsDH_Nl6oxHXAx',
+            where: 'date > "2016-01-03 09:00:00"'
+          }
+        });
 
+        $scope.layer.setMap($scope.layermap);
 
         var drawingManager = new google.maps.drawing.DrawingManager({
           drawingMode: null,
@@ -118,6 +127,15 @@ app.controller('mapController', ['$scope','$modal', '$document', 'gpsDataService
         });
     });
 
+    $scope.overlayControl = function() {
+      if(!$scope.overlay_show) {
+        $scope.layer.setMap($scope.map);
+      }
+      else {
+        $scope.layer.setMap(null);
+      }
+      $scope.overlay_show = !$scope.overlay_show;
+    }
 
     $scope.openSelectContentEditArea = function(area) {
       console.log(area);

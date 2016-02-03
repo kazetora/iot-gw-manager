@@ -10,12 +10,13 @@ block content
                     input#search-input.controls(type="text" placeholder="Search")
                     map
         div.row
-            div.col-md-6
+            div.col-md-7
               div.btn-group(style="padding: 5px;")
                 button.btn.btn-primary(type="button" ng-click="startGPSTracking()") Start Tracking
                 button.btn.btn-primary(type="button" ng-click="stopGPSTracking()") Stop Tracking
                 button.btn.btn-primary(type="button" ng-click="showAreas()") Show Areas
                 button.btn.btn-primary(type="button" ng-click="hideAreas()") Hide Areas
+                button.btn.btn-primary(type="button" ng-click="overlayControl()") Route
 
               //ul#navi.nav.nav-tabs
               //  li.active
