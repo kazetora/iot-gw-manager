@@ -6,6 +6,10 @@ angular.module('iotGwMonitor').controller('modalContentsController',
     $scope.viewTemplate = "/template/_tpl_contents_list_group";
     $scope.contentsIMG = CONTENTS_API_SERVER + "image/";
     $scope.areaName = areaName;
+    $scope.cfilter = {
+      placeholder: 'Filter Content'
+    };
+    
     console.log($scope.contentsIMG);
 
     $scope.ok = function() {

@@ -7,7 +7,7 @@ script(type="text/ng-template" id="selectContent.html")
       input.form-control(type="text" placeholder="Type Area Name here" ng-model="areaName")
     //{{areaName}}
     br
-    list-group(items="contents" selectable="multiple" template-url="viewTemplate" selected-items="selectedContents")
+    list-group(items="contents" selectable="multiple" template-url="viewTemplate" selected-items="selectedContents" filterable="cfilter")
   div.modal-footer
     button.btn.btn-primary(type="button" ng-click="ok()") OK
     button.btn.btn-warning(type="button" ng-click="cancel()") Cancel
