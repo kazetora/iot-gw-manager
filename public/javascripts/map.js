@@ -140,7 +140,7 @@ app.controller('mapController', ['$scope','$modal', '$document', 'gpsDataService
 
     $scope.openSelectContentEditArea = function(area) {
       console.log(area);
-      var _contents = contentsDataService.get({ctype: 'news'}, {},  function(){
+      var _contents = contentsDataService.get({cmd:'getContents', ctype: 'news'}, {},  function(){
         console.log(_contents);
         var modalInstance = $modal.open({
           animation: true,
@@ -175,7 +175,7 @@ app.controller('mapController', ['$scope','$modal', '$document', 'gpsDataService
 
     //console.log($scope.startdate, $scope.enddate);
     $scope.openSelectContent = function(polygon) {
-      var _contents = contentsDataService.get({ctype: 'news'}, {},  function(){
+      var _contents = contentsDataService.get({cmd: 'getContents',ctype: 'news'}, {},  function(){
         console.log(_contents);
         var modalInstance = $modal.open({
           animation: true,
@@ -244,7 +244,7 @@ app.controller('mapController', ['$scope','$modal', '$document', 'gpsDataService
     }
 
     $scope.openSelectContentShow = function(areaObj) {
-      var _contents = contentsDataService.get({ctype: 'news'}, {},  function(){
+      var _contents = contentsDataService.get({cmd:'getContents', ctype: 'news'}, {},  function(){
         console.log(_contents);
         var modalInstance = $modal.open({
           animation: true,
@@ -492,7 +492,7 @@ app.service('gpsDataService', ['$resource', function($resource) {
 }]);
 
 app.service('contentsDataService', ['$resource', function($resource) {
-  return $resource('/contents/getContents/:ctype', {}, {
+  return $resource('/contents/:cmd/:ctype', {}, {
       get: {method: 'GET', isArray: true}
       //save: {method: 'POST'},
       //delete: {method: 'DELETE'}
