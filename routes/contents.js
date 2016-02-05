@@ -48,6 +48,7 @@ router.get('/getEditContents/:ctype/:cuid?', function(req,res,next) {
     if(err){
       return res.send(err);
     }
+    //console.log(data);
     res.send(data);
   });
 });
@@ -128,4 +129,18 @@ router.get('/getDeliveries/:cid?', function(req, res, next) {
       res.send(error);
     });
 });
+
+router.delete('/deleteContent/:ctype/:cuid', function(req, res, next){
+  var wfms = config.get('wfms');
+  var bccontent = new BeaconcastContent({
+    api_server: "https://" + wfms.server
+  });
+  bccontent.deleteContent(req.params.ctype, req.params.cuid, function(err){
+    if(err)
+      res.send(err);
+    else
+      res.send("OK");
+  });
+});
+
 module.exports = router;

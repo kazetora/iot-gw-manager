@@ -4,7 +4,8 @@ require('https').globalAgent.options.rejectUnauthorized = false;
 function BeaconcastContent(params) {
   this.api_server = params.api_server;
   this.restclient = null;
-  this.content_get_url =  content_url = this.api_server + "/cms/api/v1/contents/";
+  this.content_url = this.api_server + "/cms/api/v1/contents/";
+
   this.init();
 }
 
@@ -20,7 +21,7 @@ BeaconcastContent.prototype.getContents = function (params, callback) {
   var _self = this;
 
   var ctype = params.ctype;
-  var url = _self.content_get_url + ctype
+  var url = _self.content_url + ctype
   var cuid = (typeof params.cuid != 'undefined') ? params.cuid : null;
 
   if(cuid ) {
@@ -55,6 +56,19 @@ BeaconcastContent.prototype.getContents = function (params, callback) {
     callback(err);
   });
 
-};
+}
+
+BeaconcastContent.prototype.deleteContent = function(ctype, cuid, callback) {
+  var _self = this;
+  var url = _self.content_url + ctype + "/" + cuid;
+  console.log(url);
+  var request = _self.restclient.delete(url, function(data, response){
+    callback(null);
+  });
+
+  request.on("error", function(err){
+    callback(err);
+  });
+}
 
 module.exports = BeaconcastContent;

@@ -492,8 +492,9 @@ app.service('gpsDataService', ['$resource', function($resource) {
 }]);
 
 app.service('contentsDataService', ['$resource', function($resource) {
-  return $resource('/contents/:cmd/:ctype', {}, {
-      get: {method: 'GET', isArray: true}
+  return $resource('/contents/:cmd/:ctype/:cuid', {}, {
+      get: {method: 'GET', isArray: true},
+      delete: {method: 'DELETE'}
       //save: {method: 'POST'},
       //delete: {method: 'DELETE'}
   });
