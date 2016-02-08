@@ -1,0 +1,26 @@
+extends layout
+
+block content
+  include navi.html
+  div#control-panel(ng-controller="contentEditController")
+    h1 Content Mangement
+    div.row
+      div.col-md-6
+        div.input-group
+          span.input-group-addon Search Content
+          input.form-control(type="text", placeholder="Type Keyword", ng-model="contentFilter")
+    br
+    pagination.pagination-sm(total-items="totalItems" ng-model="currentPage" max-size="maxDisplayPage" boundary-links="true" force-ellipses="true" ng-change="pageChange()")
+    //list-group(items="contents" template-url="viewTemplate")
+    div.list-group
+    div(ng-repeat='item in contents | filter:contentFilter')
+      button.list-group-item(type="button" ng-click="openContentDetail(item)")
+        div.row
+          div.pull-left
+            img.img-thumbnail(ng-if="item.data.icon.length > 0" ng-src="{{'https://bccs.nakao-lab.org/mob/image/' + item.data.icon}}" width="50px" height="50px")
+            img.img-thumbnail(ng-if="item.data.icon === null" src="http://placehold.it/50x50?text=no+img" width="50px" height="50px")
+          div.pull-left
+            h4.list-group-item-heading {{item.data.title}}
+            p.list-group-item-text.list-detail {{item.data.body | limitTo: 60}}{{item.data.body.length > 60 ? '...' : ''}}
+
+    include _modal_view_content

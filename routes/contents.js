@@ -2,6 +2,7 @@ require('https').globalAgent.options.rejectUnauthorized = false;
 var express = require('express');
 var router = express.Router();
 var config = require('config');
+var BeaconcastContent = require('../beaconcast/BeaconcastContent');
 
 function getDeliveries(cid, onSuccess, onError) {
   var Client = require('node-rest-client').Client;
@@ -11,6 +12,7 @@ function getDeliveries(cid, onSuccess, onError) {
   if(cid) {
       get_content_url += "/" + cid;
   }
+  get_content_url += "?sort=" + encodeURIComponent('{"created_time":-1}');
   console.log(get_content_url);
   var request = client.get(get_content_url, function(data, response){
     //console.log(data.toString());
@@ -24,6 +26,32 @@ function getDeliveries(cid, onSuccess, onError) {
     onError(error);
   })
 }
+
+router.get('/getEditContents/:ctype/:cuid?', function(req,res,next) {
+  var wfms = config.get('wfms');
+  var bccontent = new BeaconcastContent({
+    api_server: "https://" + wfms.server
+  });
+  var params = {
+    ctype: req.params.ctype
+  };
+  if (typeof req.params.cuid !== 'undefined') {
+    params['cuid']= req.params.cuid;
+  }
+  if(JSON.stringify(req.query) !== '{}') {
+    params['url_params']= req.query;
+  }
+  if(typeof req.query.keyword != 'undefined') {
+    params['keyword']= req.query.keyword
+  }
+  bccontent.getContents(params, function(err, data){
+    if(err){
+      return res.send(err);
+    }
+    //console.log(data);
+    res.send(data);
+  });
+});
 
 router.get('/getContents/:ctype/:cuid?', function(req, res, next) {
     // var db = req.db;
@@ -43,6 +71,7 @@ router.get('/getContents/:ctype/:cuid?', function(req, res, next) {
     if(cuid ) {
         get_content_url += "/" + cuid;
     }
+    get_content_url += "?sort=" + encodeURIComponent('{"created_time":-1}');
     console.log(get_content_url);
     var request = client.get(get_content_url, function(data, response){
       if(!Array.isArray(data)) {
@@ -55,7 +84,7 @@ router.get('/getContents/:ctype/:cuid?', function(req, res, next) {
           var async = require("async");
 
           var process_data = function(cdata, ddata, onComplete) {
-              async.each(cdata, 
+              async.each(cdata,
                  function(item, callback) {
                      if(ddata.indexOf(item.cuid) >=0 && item.status == "published") {
                          final_data.push(item);
@@ -67,16 +96,19 @@ router.get('/getContents/:ctype/:cuid?', function(req, res, next) {
                  }
               );
           }
-          async.each(deliveries, 
+          async.each(deliveries,
              function(item,callback) {
                  valid_cuids.push(item['cuid']);
                  callback();
              },
              function(err) {
-                 process_data(data, valid_cuids, function() { res.send(final_data); });
+                 process_data(data, valid_cuids, function() {
+                   console.log(final_data.length);
+                   res.send(final_data);
+                 });
              }
           );
-             
+
           //res.send(data);
       }, function(err) {
          res.send(err);
@@ -86,7 +118,7 @@ router.get('/getContents/:ctype/:cuid?', function(req, res, next) {
     request.on("error", function(err){
       console.log('request error', err);
       res.send(error);
-    })
+    });
 });
 
 router.get('/getDeliveries/:cid?', function(req, res, next) {
@@ -97,4 +129,18 @@ router.get('/getDeliveries/:cid?', function(req, res, next) {
       res.send(error);
     });
 });
+
+router.delete('/deleteContent/:ctype/:cuid', function(req, res, next){
+  var wfms = config.get('wfms');
+  var bccontent = new BeaconcastContent({
+    api_server: "https://" + wfms.server
+  });
+  bccontent.deleteContent(req.params.ctype, req.params.cuid, function(err){
+    if(err)
+      res.send(err);
+    else
+      res.send("OK");
+  });
+});
+
 module.exports = router;
