@@ -2,13 +2,14 @@ doctype html
 html(ng-app="iotGwMonitor")
   head
     title= title
-    //- link(rel='stylesheet', href='http://getbootstrap.com/dist/css/bootstrap.min.css')
-    link(rel='stylesheet', href='/lib/bower_components/bootstrap/dist/css/bootstrap.min.css')
+    //- link(rel='stylesheet' href='http://getbootstrap.com/dist/css/bootstrap.min.css')
+    link(rel='stylesheet' href='/lib/bower_components/bootstrap/dist/css/bootstrap.min.css')
     //<link rel="stylesheet" href="/lib/bower_components/eonasdan-bootstrap-datetimepicker/build/css/bootstrap-datetimepicker.min.css" />
-    link(rel='stylesheet', href='/lib/bower_components/angular-bootstrap-datetimepicker/src/css/datetimepicker.css')
-    link(rel='stylesheet', href='/lib/bower_components/angular-list-group/dist/angular-list-group.css')
-    link(rel='stylesheet', href='/stylesheets/style.css')
-    link(rel='stylesheet', href='/stylesheets/dashboard.css')
+    link(rel='stylesheet' href='/lib/bower_components/angular-bootstrap-datetimepicker/src/css/datetimepicker.css')
+    link(rel='stylesheet' href='/lib/bower_components/angular-list-group/dist/angular-list-group.css')
+    //link(rel='sytlesheet' href='/lib/bower_components/angular-block-ui/dist/angular-block-ui.min.css')
+    link(rel='stylesheet' href='/stylesheets/style.css')
+    link(rel='stylesheet' href='/stylesheets/dashboard.css')
     script(src='https://maps.googleapis.com/maps/api/js?libraries=drawing,geometry,places')
 
   body
@@ -28,11 +29,14 @@ html(ng-app="iotGwMonitor")
     script(src='/lib/bower_components/moment/min/moment.min.js')
     //script(src='/lib/bower_components/eonasdan-bootstrap-datetimepicker/build/js/bootstrap-datetimepicker.min.js')
     script(src='/lib/bower_components/angular-bootstrap-datetimepicker/src/js/datetimepicker.js')
-    script(src='/lib/bower_components/angular-bootstrap/ui-bootstrap.min.js')
+    script(src='/lib/bower_components/angular-bootstrap-datetimepicker/src/js/datetimepicker.templates.js')
+    //script(src='/lib/bower_components/angular-bootstrap/ui-bootstrap.min.js')
     script(src='/lib/bower_components/angular-bootstrap/ui-bootstrap-tpls.min.js')
+
     script(src='/lib/geojson.min.js')
     script(src='/lib/elabel.js')
     script(src='/socket.io/socket.io.js')
     script(src='/javascripts/app.js')
     script(src='/javascripts/map.js')
     script(src='/javascripts/contents.js')
+    script(src='/javascripts/content-editor.js')
