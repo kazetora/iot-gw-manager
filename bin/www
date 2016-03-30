@@ -39,8 +39,21 @@ var GPSTrackingData = {};
 
 var sendGPSTrackingInterval = null;
 
+var fetchArea = function(socket) {
+  console.log("fetching area");
+  var area = require("../models/area");
+  var Area = new area();
+  Area.getArray(function(data){
+      //console.log(data);
+      socket.emit('area/fetch', data);
+  });
+}
+
 io.on("connection", function(socket){
     console.log("Client connected");
+    // send area on first connect
+    //fetchArea(socket);
+
     if(GPSTrackingStart) {
       socket.emit('gps_tracking_start');
     }
@@ -96,14 +109,9 @@ io.on("connection", function(socket){
     });
 
     socket.on("area/fetch", function(){
-      console.log("fetching area");
-      var area = require("../models/area");
-      var Area = new area();
-      Area.getArray(function(data){
-          console.log(data);
-          socket.emit('area/fetch', data);
-      });
+      fetchArea(socket);
     });
+
     socket.on("area/fetch_update", function(area_id){
       console.log("refetching area");
       var area = require("../models/area");
@@ -114,6 +122,10 @@ io.on("connection", function(socket){
               socket.broadcast.emit("area/add", data);
           }
       });
+    });
+
+    socket.on("disconnect", function() {
+      console.log("user disconnected");
     });
 });
 
