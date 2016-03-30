@@ -40,7 +40,7 @@ var GPSTrackingData = {};
 var sendGPSTrackingInterval = null;
 
 io.on("connection", function(socket){
-    console.log("Client connected");
+    console.log("Client connected___________________________________");
     if(GPSTrackingStart) {
       socket.emit('gps_tracking_start');
     }
@@ -96,13 +96,29 @@ io.on("connection", function(socket){
     });
 
     socket.on("area/fetch", function(){
-      console.log("fetching area");
+      console.log("#### fetching area for " + socket.id);
       var area = require("../models/area");
       var Area = new area();
+      var filter = {$or:[{name:"broadcast_area_kanto"},{name:"HanedaAirport"}]}
       Area.getArray(function(data){
-          console.log(data);
-          socket.emit('area/fetch', data);
-      });
+          console.log("fetching " + data.length + " areas");
+          //var d = Object.keys(data).map(function(key){ return {area_id:data[key].area_id, cuids: data[key].cuids, coords:data[key].coords}; });
+          var d = Object.keys(data).map(function(key){ 
+            return {
+              area_id:data[key].area_id, 
+              cuids: data[key].cuids, 
+              coords:Object.keys(data[key].coords).map(function(k){
+                return {
+                  lat: Math.round(data[key].coords[k].lat * 1000000) / 1000000,
+                  lng: Math.round(data[key].coords[k].lng * 1000000) / 1000000,
+                };
+              })
+            }; 
+          });
+          socket.emit('area/fetch', d);
+          //socket.emit('area/fetch', []);
+   
+      },filter);
     });
     socket.on("area/fetch_update", function(area_id){
       console.log("refetching area");

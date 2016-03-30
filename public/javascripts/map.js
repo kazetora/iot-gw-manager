@@ -390,6 +390,7 @@ app.controller('mapController', ['$scope','$modal', '$document', 'gpsDataService
                 //var ma = new google.maps.Polygon({paths: $scope.markedAreas[i]});
                 if(google.maps.geometry.poly.containsLocation(geometry, $scope.markedAreas[i].area) ) {
                   isInArea = true;
+                  break;
                 }
               }
               var color = isInArea ? 'red' : 'blue';
