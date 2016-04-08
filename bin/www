@@ -37,6 +37,8 @@ var GPSTrackingStart = false;
 
 var GPSTrackingData = {};
 
+var areaFetchSession = {};
+
 var sendGPSTrackingInterval = null;
 
 io.on("connection", function(socket){
@@ -96,6 +98,11 @@ io.on("connection", function(socket){
     });
 
     socket.on("area/fetch", function(){
+      if(areaFetchSession.hasOwnProperty(socket.id)) {
+        return;
+      }
+      areaFetchSession[socket.id] = new Date();
+
       console.log("#### fetching area for " + socket.id);
       var area = require("../models/area");
       var Area = new area();
@@ -116,9 +123,12 @@ io.on("connection", function(socket){
             }; 
           });
           socket.emit('area/fetch', d);
+          setTimeout(function(){
+            delete areaFetchSession[socket.id];
+          }, 300000);
           //socket.emit('area/fetch', []);
    
-      },filter);
+      });
     });
     socket.on("area/fetch_update", function(area_id){
       console.log("refetching area");
