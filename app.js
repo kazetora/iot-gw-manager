@@ -4,9 +4,10 @@ var favicon = require('serve-favicon');
 var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
+var config = require('config');
 // Database
 var mongo = require('mongoskin');
-var db = mongo.db("mongodb://localhost:27017/iotGw", {native_parser: true});
+var db = mongo.db("mongodb://" + config.get("mongo.server") + ":" + config.get("mongo.port") + "/" + config.get("mongo.db"), {native_parser: true});
 
 var routes = require('./routes/index');
 var users = require('./routes/users');

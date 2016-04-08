@@ -7,6 +7,10 @@
       "banner": "banner"
     },
     "delivery_req_uri" : "/cms/api/v1/deliveries"
+  },
+  "mongo" : {
+    "server": "192.168.110.120",
+    "port": "22222",
+    "db": "iotGw"
   }
-
 }
