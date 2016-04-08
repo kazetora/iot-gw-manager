@@ -15,7 +15,7 @@ OPENSSL=`which openssl`
 
 rm server.pass.key
 
-`$OPENSSL req -new -key server.key -out server.csr`
+`$OPENSSL req -new -key server.key -out server.csr -subj "/C=JP/ST=Tokyo/L=Hongo/O=U-Tokyo/OU=Nakaolab/CN=nakao-lab.org"`
 
 
 `$OPENSSL x509 -req -days 365 -in server.csr -signkey server.key -out server.crt`
