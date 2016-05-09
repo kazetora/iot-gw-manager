@@ -6,7 +6,8 @@ function BaseModel(collection) {
 
 BaseModel.prototype._init = function() {
   var mongo = require('mongoskin');
-  var db = mongo.db("mongodb://localhost:27017/iotGw", {native_parser: true});
+  var config=require('config');
+  var db = mongo.db("mongodb://" + config.get("mongo.server") + ":" + config.get("mongo.port") + "/" + config.get("mongo.db"), {native_parser: true});
   this.db = db;
 };
 
