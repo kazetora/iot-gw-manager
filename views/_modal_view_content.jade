@@ -4,13 +4,13 @@ script(type="text/ng-template" id="viewContent.html")
   div.modal-body
     div.row(style="margin-left: 20px;margin-right: 5px")
       div.pull-left
-        img.img-thumbnail(ng-if="item.data.icon.length > 0" ng-src="{{'https://bccs.nakao-lab.org/mob/image/' + item.data.icon}}" width="50px" height="50px")
+        img.img-thumbnail(ng-if="item.data.icon.length > 0" ng-src="{{'https://__WFMS_HOST__/mob/image/' + item.data.icon}}" width="50px" height="50px")
         img.img-thumbnail(ng-if="item.data.icon === null" src="http://placehold.it/50x50?text=no+img" width="50px" height="50px")
       div.pull-left
         h5 {{item.data.title}}
     hr
     div.row
-      img.center-block(ng-if="item.data.image.length > 0" ng-src="{{'https://bccs.nakao-lab.org/mob/image/' + item.data.image}}" )
+      img.center-block(ng-if="item.data.image.length > 0" ng-src="{{'https://__WFMS_HOST__/mob/image/' + item.data.image}}" )
     div.row
       p
         p(style="margin-left: 10px;margin-right: 5px") {{item.data.body }}

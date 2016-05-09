@@ -1,6 +1,6 @@
 {
   "wfms" : {
-    "server": "133.11.240.228",
+    "server": "__WFMS_HOST__",
     "content_req_uri": "/cms/api/v1/contents",
     "content_type": {
       "news": "news",
@@ -9,8 +9,8 @@
     "delivery_req_uri" : "/cms/api/v1/deliveries"
   },
   "mongo" : {
-    "server": "192.168.110.120",
-    "port": "22222",
+    "server": "__MONGO_DB_HOST__",
+    "port": "__MONGO_DB_PORT__",
     "db": "iotGw"
   }
 }

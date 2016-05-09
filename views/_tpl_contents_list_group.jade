@@ -1,6 +1,6 @@
 div.row.content-item
   div.pull-left
-    img.img-thumbnail(ng-if="item.data.icon.length > 0" ng-src="{{'https://bccs.nakao-lab.org/mob/image/' + item.data.icon}}" width="50px" height="50px")
+    img.img-thumbnail(ng-if="item.data.icon.length > 0" ng-src="{{'https://__WFMS_HOST__/mob/image/' + item.data.icon}}" width="50px" height="50px")
     img.img-thumbnail(ng-if="item.data.icon === null" src="http://placehold.it/50x50?text=no+img" width="50px" height="50px")
   div.pull-left
     h4.list-group-item-heading {{item.data.title}}

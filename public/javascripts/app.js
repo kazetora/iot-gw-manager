@@ -9,7 +9,7 @@ var app = angular.module('iotGwMonitor', ['ngResource', 'btford.socket-io', 'ngM
 //       libraries: 'weather,geometry,visualization'
 //   });
 // });
-app.constant('CONTENTS_API_SERVER', 'https://133.11.240.228/mob/');
+app.constant('CONTENTS_API_SERVER', 'https://__WFMS_HOST__/mob/');
 
 app.controller('NodeController', ['$scope', 'NodeService', '$timeout', 'mySocket',
     function($scope, NodeService, $timeout, mySocket){
