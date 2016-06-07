@@ -104,7 +104,7 @@ router.get('/getContents/:ctype/:cuid?', function(req, res, next) {
              function(err) {
                  process_data(data, valid_cuids, function() {
                    console.log(final_data.length);
-                   res.send(default_final_data);
+                   res.send(final_data);
                  });
              }
           );
@@ -116,7 +116,7 @@ router.get('/getContents/:ctype/:cuid?', function(req, res, next) {
     });
 
     request.on("error", function(err){
-      console.log('request erdefault_ror', err);
+      console.log('request error: ', err);
       res.send(error);
     });
 });
