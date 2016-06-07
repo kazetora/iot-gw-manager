@@ -25,6 +25,8 @@
     "turf-inside": "^1.1.4",
     "urlcode-json": "*",
     "underscore": "~1.8.3",
-    "async-each-series": "~1.1.0"
+    "async-each-series": "~1.1.0",
+    "moment": "~2.13.0",
+    "socket.io-client": "~1.4.6"
   }
 }
