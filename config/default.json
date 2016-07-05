@@ -1,13 +1,13 @@
 {
   "wfms" : {
-    "server": "bccs.nakao-lab.org",
+    "server": "__WFMS_SERVER__",
     "content_req_uri": "/cms/api/v1/contents",
     "content_type": {
       "news": "news",
       "banner": "banner"
     },
     "delivery_req_uri" : "/cms/api/v1/deliveries",
-    "iot_gw_server" : "https://133.11.240.227:3000"
+    "iot_gw_server" : "__IOT_GW_SERVER__"
   }
 
 }
