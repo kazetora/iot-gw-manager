@@ -34,6 +34,9 @@ var io = require("socket.io")(server);
 var GPSTrackingStart = false;
 //var markedAreas = [];
 //var GPSTrackingRoom = "gpsTracking";
+// Database
+var mongo = require('mongoskin');
+var db = mongo.db("mongodb://localhost:27017/wifiLogger", {native_parser: true});
 
 var GPSTrackingData = {};
 
@@ -43,6 +46,16 @@ var sendGPSTrackingInterval = null;
 
 io.on("connection", function(socket){
     console.log("Client connected___________________________________");
+    socket.on("wifi/fingerprint", function(data){
+      data = JSON.parse(data);
+      console.log(data);
+      db.collection('fingerprint').insert(data, function(err,result){
+        if(err){
+          console.log(err);
+        }
+      });
+    });
+
     if(GPSTrackingStart) {
       socket.emit('gps_tracking_start');
     }
@@ -110,24 +123,24 @@ io.on("connection", function(socket){
       Area.getArray(function(data){
           console.log("fetching " + data.length + " areas");
           //var d = Object.keys(data).map(function(key){ return {area_id:data[key].area_id, cuids: data[key].cuids, coords:data[key].coords}; });
-          var d = Object.keys(data).map(function(key){ 
+          var d = Object.keys(data).map(function(key){
             return {
-              area_id:data[key].area_id, 
-              cuids: data[key].cuids, 
+              area_id:data[key].area_id,
+              cuids: data[key].cuids,
               coords:Object.keys(data[key].coords).map(function(k){
                 return {
                   lat: Math.round(data[key].coords[k].lat * 1000000) / 1000000,
                   lng: Math.round(data[key].coords[k].lng * 1000000) / 1000000,
                 };
               })
-            }; 
+            };
           });
           socket.emit('area/fetch', d);
           setTimeout(function(){
             delete areaFetchSession[socket.id];
           }, 300000);
           //socket.emit('area/fetch', []);
-   
+
       });
     });
     socket.on("area/fetch_update", function(area_id){
