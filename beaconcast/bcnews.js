@@ -71,6 +71,7 @@ BCNews.prototype.init = function() {
 
 BCNews.prototype.init_socket = function(){
   var _self = this;
+  console.log("init socket");
   var socketOptions = {
       "secure": true,
       "transports": [ "websocket" ],
@@ -80,6 +81,9 @@ BCNews.prototype.init_socket = function(){
       "connect timeout": 10000
   };
   _self.socket = io.connect(_self.area_server, socketOptions);
+  _self.socket.on("connect", function(){
+    console.log("SOCKET CONNECTED");
+  });
 }
 
 BCNews.prototype.downloadImage = function(uri, callback){
@@ -400,6 +404,7 @@ BCNews.prototype.register = function(params, targetAreaID, cb) {
 }
 
 BCNews.prototype.registerTargetArea = function(areaID, callback) {
+  console.log("REGISTER AREA");
   var _self = this;
   var args = {
     data: {"cuids": [_self.content_id]},

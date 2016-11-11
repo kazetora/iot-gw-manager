@@ -151,12 +151,13 @@ router.post('/registerNews', function(req, res, next){
     delivery_timespan: params.broadcast_timespan,
     target_group: params.broadcast_group_id,
     title: params.title,
-    body: params.body,
+    //body: params.body,
+    body: "Beaconcast Demo @ CEATEC 2016 Makuhari\n\n University of Tokyo",
     //img_url: news.image,
     link_url: params.link ? params.link : null,
     icon_url: params.icon ? params.icon : null,
     img_url: params.image ? params.image : null
-  }, params.broadcast_area_id,
+  }, 'VJnwj3AOg'/*params.broadcast_area_id*/,
   function() {
     res.send("OK");
   });
