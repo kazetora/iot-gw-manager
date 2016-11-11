@@ -8,6 +8,8 @@ function BCNews(params){
   this.area_server = params.area_server;
   this.target_group = params.target_group;
   this.img_api_path = this.api_server + "/mob/api/v1/images";
+  this.video_api_path = this.api_server + "/mob/api/v1/videos";
+  this.VIDEO_FILE_PATH = "../ytube_crawler/videos/";
   this.delivery_timespan = (typeof params.delivery_timespan != "undefined") ? params.delivery_timespan : 30;
   this.title = (typeof params.title != "undefined") ? params.title : null;
   this.body = (typeof params.body != "undefined") ? params.body: null;
@@ -137,6 +139,33 @@ BCNews.prototype.uploadImage = function(callback) {
   //callback();
 }
 
+BCNews.prototype.uploadVideo = function(callback) {
+  var _self = this;
+  var fs = require('fs'),
+      request = require('request');
+
+  var req = request.post(_self.video_api_path, function(err, resp, body){
+    if(err){
+      console.log('Error: ' + err);
+      return callback();
+    } else {
+      console.log(body);
+      try {
+          var ret = JSON.parse(body);
+          callback(JSON.parse(body));
+      } catch(err) {
+          console.log(err.stack);
+          return callback();
+      }
+    }
+  });
+  var form = req.form();
+  form.append('file', fs.createReadStream(_self.VIDEO_FILE_PATH + _self.video_url + ".mp4"), {
+    contentType: "video/mp4"
+  });
+  //callback();
+}
+
 BCNews.prototype.registerContentImage = function(callback) {
   console.log("register image");
   var _self = this;
@@ -185,9 +214,17 @@ BCNews.prototype.registerContentVideo = function(callback) {
     return callback();
   }
   else {
+    _self.uploadVideo(function(data){
+        if(typeof data == 'undefined' || data == null) {
+          return callback();
+        }
+        _self.video_id = data.iuid;
+        console.log(_self.video_id);
+        callback();
+    });
     // TODO: register video (get value for video_id)
     // for now do nothing
-    return callback();
+    //return callback();
   }
 }
 
