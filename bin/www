@@ -41,6 +41,8 @@ var areaFetchSession = {};
 
 var sendGPSTrackingInterval = null;
 
+var clearGPSTrackingDataInterval = null;
+
 io.on("connection", function(socket){
     console.log("Client connected___________________________________");
     if(GPSTrackingStart) {
@@ -68,9 +70,14 @@ io.on("connection", function(socket){
       socket.broadcast.emit('gps_tracking_start');
       if(sendGPSTrackingInterval === null) {
           sendGPSTrackingInterval = setInterval(function(){
-              //io.sockets.emit("gpsTrace", GPSTrackingData);
+              //io.sockets.emit("gpstrace", gpstrackingdata);
               io.to("_room_ui").emit("gpsTrace", GPSTrackingData);
           }, 3000);
+      }
+      if(clearGPSTrackingDataInterval === null) {
+          clearGPSTrackingDataInterval = setInterval(function(){
+              GPSTrackingData = {}; 
+          }, 600000);
       }
     });
 
@@ -79,7 +86,9 @@ io.on("connection", function(socket){
       GPSTrackingStart = false;
       socket.broadcast.emit('gps_tracking_stop');
       clearInterval(sendGPSTrackingInterval);
+      clearInterval(clearGPSTrackingDataInterval);
       sendGPSTrackingInterval = null;
+      GPSTrackingData = {};
     });
 
     socket.on("gps_trace", function(gps){
