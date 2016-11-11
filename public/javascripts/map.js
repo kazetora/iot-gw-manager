@@ -31,6 +31,7 @@ app.controller('mapController', ['$scope','$modal', '$document', 'gpsDataService
     $scope.markedAreas = [];
     $scope.incStatus = "";
     $scope.overlay_show = false;
+    $scope.activeNodes = 0;
 
     var init = function() {
       $scope.updateList();
@@ -357,6 +358,8 @@ app.controller('mapController', ['$scope','$modal', '$document', 'gpsDataService
         $scope.gpsTrackStart = false;
         console.log("stop gps tracking");
         mySocket.emit("stop_gps_tracking");
+        $scope.gpsTrackData = {};
+        $scope.activeNodes = 0;
         $scope.clearMap();
       }
     }
@@ -370,6 +373,7 @@ app.controller('mapController', ['$scope','$modal', '$document', 'gpsDataService
         //$scope.gpsTrackData[data.id] = data;
 
         var data_arr = Object.keys($scope.gpsTrackData).map(function(key){return $scope.gpsTrackData[key];});
+        $scope.activeNodes = data_arr.length;
         // for(var nodeid in $scope.gpsTrackData) {
         //   data_arr.push($scope.gpsTrackData[nodeid]);
         // }

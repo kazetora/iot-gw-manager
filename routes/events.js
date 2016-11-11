@@ -2,6 +2,60 @@ var express = require('express');
 var router = express.Router();
 var shortid = require('shortid');
 
+router.get('/activeNodeCount', function(req,res,next){
+   var db = req.db;
+   var count = false;
+   if(typeof req.query.count !== 'undefined' && req.query.count === 1){
+       count = true;
+   }   
+   var startdate = new Date(req.body.startdate);
+   var enddate = new Date(req.body.enddate);
+   db.collection('events').distinct("node_id", {
+           date_create: {
+               $gte: startdate,
+               $lte: enddate
+           }
+       },
+       function(error, results) {
+           if(!error){
+               if(count)
+                   res.send(results.length);
+               else
+                   res.send(results);
+           } 
+       });
+});
+
+router.get('/activeNodeCountToday', function(req,res,next){
+   var db = req.db;
+   var count = false;
+   if(typeof req.query.count !== 'undefined' && req.query.count === '1'){
+       count = true;
+   }   
+   var today = new Date();
+   var startdate = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+   //var offset = (new Date().getTimezoneOffset() / 60) * -1;
+   //startdate = new Date(startdate.getTime() + offset);
+   
+console.log(startdate);
+
+   db.collection('events').distinct("node_id", {
+           date_create: {
+               $gte: startdate           
+           }
+       },
+       function(error, results) {
+           if(!error){
+               if(count)
+                   res.send({count: results.length});
+               else
+                   res.send({today: startdate, data: results});
+           } 
+           else
+              res.send(error);
+       });
+});
+
 router.get('/:id', function(req, res, next) {
     var db = req.db;
     var targetId = req.params.id;
@@ -27,6 +81,7 @@ router.get('/:id', function(req, res, next) {
         res.json(items);
     });
 });
+
 
 router.post('/addEvent', function(req, res, next) {
     var params = req.body;
@@ -94,5 +149,6 @@ router.post('/getGeoJson/', function(req, res, next) {
         res.send(ret);
     });
 });
+
 
 module.exports = router;
