@@ -4,6 +4,8 @@ var favicon = require('serve-favicon');
 var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
+var config = require('config');
+
 // Database
 var mongo = require('mongoskin');
 var db = mongo.db("mongodb://localhost:27017/iotGw", {native_parser: true});
@@ -19,6 +21,12 @@ var areas = require('./routes/areas');
 var template = require('./routes/template');
 var content_manager = require('./routes/content_manager');
 //var config = require('config');
+
+var BCNews = require('./beaconcast/bcnews');
+var bcnews = new BCNews({
+  api_server: 'https://' + config.get('wfms.server'),
+  area_server: config.get('wfms.iot_gw_server')
+});
 
 var app = express();
 
@@ -37,6 +45,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use(function(req, res, next) {
     //console.log(req.connection.remoteAddress);
     req.db = db;
+    req.bcnews = bcnews;
     next();
 });
 app.use('/', routes);
